@@ -10,8 +10,8 @@ router.use('/sensei', (req, res, next) => {
     res.send('El facusama te bendice.')
 })
 
-router.use('/user', userRouter)
-router.use('/client', verifyToken, clientRouter)
-router.use('/reservation', verifyToken, reservationRouter)
+router.use('/user', userRouter) //* ✔
+router.use('/client', verifyToken, clientRouter) // X
+router.use('/reservation', verifyToken, reservationRouter) // X
 
 export default router

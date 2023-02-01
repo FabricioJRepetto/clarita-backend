@@ -3,23 +3,7 @@ dotenv.config()
 import User from '../models/user.js'
 import jwt from "jsonwebtoken";
 import { verifyJWT } from './verify.js';
-import nodemailer from "nodemailer";
-import { google } from "googleapis";
-
-const {
-    CLIENT_MAIL,
-    CLIENT_ID,
-    CLIENT_SECRET,
-    REFRESH_TOKEN,
-} = process.env;
-
-const oAuth2Client = new google.auth.OAuth2(
-    CLIENT_ID,
-    CLIENT_SECRET,
-    REFRESH_TOKEN
-);
-
-oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
+import { sendEmail } from '../utils/sendEmail.js';
 
 const signin = async (req, res, next) => {
     try {
@@ -28,9 +12,14 @@ const signin = async (req, res, next) => {
             email,
             password
         } = req.body
+
         if (!user_name) return res.json({ error: 'No user name.' })
         if (!email) return res.json({ error: 'No user email.' })
         if (!password) return res.json({ error: 'No user password.' })
+
+        const emailInUse = await User.findOne({ email })
+
+        if (emailInUse) return res.json({ error: 'El email ya está registrado.' })
 
         const newUser = await User.create(
             {
@@ -117,18 +106,18 @@ const autoLogin = async (req, res, next) => {
 
 const changePassword = async (req, res, next) => {
     try {
-        const {
-            email,
-            password,
-            newPassword,
-        } = req.body
+        const { id } = req.user,
+            {
+                password,
+                newPassword,
+            } = req.body
 
-        if (!email) return res.json({ error: 'No user email.' })
+        if (!id) return res.json({ error: 'No user id.' })
         if (!password) return res.json({ error: 'No old password.' })
         if (!newPassword) return res.json({ error: 'No new password.' })
         if (password === newPassword) return res.json({ error: 'New and old passwords can not be the same.' })
 
-        const userFound = await User.findOne({ email })
+        const userFound = await User.findById(id)
 
         if (userFound) {
             const correctPassword = await userFound.comparePassword(password)
@@ -137,9 +126,11 @@ const changePassword = async (req, res, next) => {
                 await userFound.save()
 
                 return res.json({ message: 'Contraseña actualizada.', userFound })
+            } else {
+                return res.json({ error: 'Contraseña incorrecta.' })
             }
         } else {
-            return res.json({ error: 'No hay usuarios asociados a ese email.' })
+            return res.json({ error: 'Usuario inexistente.' })
         }
 
     } catch (error) {
@@ -156,62 +147,7 @@ const forgotPassword = async (req, res, next) => {
         const userFound = await User.findOne({ email })
 
         if (userFound) {
-
-            const accessToken = await oAuth2Client.getAccessToken();
-            const transport = nodemailer.createTransport({
-                service: "gmail",
-                auth: {
-                    type: "OAuth2",
-                    user: CLIENT_MAIL,
-                    clientId: CLIENT_ID,
-                    clientSecret: CLIENT_SECRET,
-                    refreshToken: REFRESH_TOKEN,
-                    accessToken: accessToken,
-                },
-            });
-
-            //!! VOLVER
-            //? armar bien el link
-            // FRONT_URL + /user/resetPasswordToken?t= + token
-            //? cambiar email
-
-            const token = jwt.sign({ user: { id: userFound.id, email } }, process.env.JWT_SECRET, {
-                expiresIn: 1000 * 60 * 15,
-            }),
-                link = `link del front + token: ${token}`
-
-            const mailOptions = {
-                from: `Clarita admin automático <${CLIENT_MAIL}>`,
-                // to: email,
-                to: 'mars-shadow@hotmail.com',
-                subject: 'Cambio de contraseña',
-                html: `
-                <section 
-                    style="
-                    font-family: 'Poppins', sans-serif;
-                    box-sizing: border-box;
-                    margin: 0;
-                    padding: 2rem;
-                    overflow-x: hidden;
-                    box-sizing: border-box;
-                    text-align: center;
-                    background-color: black;
-                    color: white;
-                    font-size: 1.5rem;
-                    ">
-                <h3 style="font-size: 1.75rem;">Se recibio una solicitud para restablecer tu contraseña</h3>
-                <p>continúa el proceso ingresando <a href="${link}" target="_blank">aquí</a></p>
-                <p>o con el siguiente enlace:</p>
-                <a href="${link}" target="_blank">${link}</a>
-                </br>
-                <b>${link}</b>
-                </br>
-                <i>este código expira en 15 minutos</i>
-                </section>
-                `,
-            };
-
-            const result = await transport.sendMail(mailOptions);
+            const result = await sendEmail('reset_pw', email, userFound.id);
             return res.json({ result });
         } else {
             return res.json({ error: 'No hay usuarios asociados a ese email.' })
@@ -225,7 +161,6 @@ const forgotPassword = async (req, res, next) => {
 const checkPasswordToken = async (req, res, next) => {
     try {
         const { t } = req.query
-        console.log(t);
         if (!t) return res.json({ error: 'No token received' })
 
         const { user, userFound } = await verifyJWT(t)
@@ -264,21 +199,128 @@ const newPassword = async (req, res, next) => {
     }
 }
 
-// const adminUpdate = async (req, res, next) => {
-//     try {
+const changeEmail = async (req, res, next) => {
+    try {
+        const { id, email } = req.user,
+            { password, newEmail } = req.body
 
-//     } catch (error) {
-//         next(error)
-//     }
-// }
+        if (!id) return res.json({ error: 'No user id.' })
+        if (!password) return res.json({ error: 'No password.' })
+        if (!newEmail) return res.json({ error: 'No email.' })
+        if (email === newEmail) return res.json({ error: 'Current and new email are the same.' })
 
-// const roleUpdate = async (req, res, next) => {
-//     try {
+        const userFound = await User.findById(id)
 
-//     } catch (error) {
-//         next(error)
-//     }
-// }
+        if (userFound) {
+            const correctPassword = await userFound.comparePassword(password)
+            if (correctPassword) {
+                const result = await sendEmail('change_email', newEmail, id);
+
+                return res.json({ message: 'Se ha enviado un codigo de confirmación al email indicado.', result })
+            } else {
+                return res.json({ error: 'Contraseña incorrecta.' })
+            }
+        } else {
+            return res.json({ error: 'No hay usuarios asociados a ese email.' })
+        }
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+const checkEmailToken = async (req, res, next) => {
+    try {
+        const { t } = req.query
+        if (!t) return res.json({ error: 'No token received' })
+
+        const { user, userFound } = await verifyJWT(t)
+
+        if (!userFound) return res.json({ error: 'User not found' })
+
+        const userUpdated = await User.findById(user.id)
+
+        userUpdated.email = user.email
+        await userUpdated.save()
+
+        res.json({ message: `Email actualizado a "${user.email}". Vuelve a iniciar sesión.`, userUpdated })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+const adminPwUpdate = async (req, res, next) => {
+    try {
+        const {
+            user_id,
+            newPassword
+        } = req.body
+
+        if (!user_id) return res.json({ error: 'No user id received.' })
+        if (!newPassword) return res.json({ error: 'No password received.' })
+
+        const targetUser = await User.findById(user_id)
+
+        if (!targetUser) return res.json({ error: 'No password received.' })
+
+        targetUser.password = newPassword
+        await targetUser.save()
+
+        return res.json({ message: `Contraseña del usuario ${targetUser.user_name} actualizada.` })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+const roleUpdate = async (req, res, next) => {
+    try {
+        const {
+            user_id,
+            newRole
+        } = req.body
+
+        if (!user_id) return res.json({ error: 'No user id received.' })
+        if (!newRole) return res.json({ error: 'No role received.' })
+
+        const targetUser = await User.findById(user_id)
+
+        if (!targetUser) return res.json({ error: 'No password received.' })
+
+        targetUser.role = newRole
+        await targetUser.save()
+
+        return res.json({ message: `Rol del usuario ${targetUser.user_name} actualizado a "${targetUser.role}".` })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+const adminEmailUpdate = async (req, res, next) => {
+    try {
+        const {
+            user_id,
+            newEmail
+        } = req.body
+
+        if (!user_id) return res.json({ error: 'No user id received.' })
+        if (!newEmail) return res.json({ error: 'No email received.' })
+
+        const targetUser = await User.findById(user_id)
+
+        if (!targetUser) return res.json({ error: `No user found with this id: ${user_id}.` })
+
+        targetUser.email = newEmail
+        await targetUser.save()
+
+        return res.json({ message: `Email del usuario ${targetUser.user_name} actualizado a "${newEmail}".` })
+
+    } catch (error) {
+        next(error)
+    }
+}
 
 export {
     signin,
@@ -287,5 +329,12 @@ export {
     changePassword,
     forgotPassword,
     checkPasswordToken,
-    newPassword
+    newPassword,
+
+    changeEmail,
+    checkEmailToken,
+
+    adminPwUpdate,
+    roleUpdate,
+    adminEmailUpdate
 }

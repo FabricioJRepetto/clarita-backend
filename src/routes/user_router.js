@@ -8,8 +8,11 @@ import {
     forgotPassword,
     checkPasswordToken,
     newPassword,
-    // adminUpdate,
-    // roleUpdate
+    changeEmail,
+    checkEmailToken,
+    adminPwUpdate,
+    roleUpdate,
+    adminEmailUpdate
 } from "../controllers/user_controller.js"
 import { verifyToken, verifyRole } from "../controllers/verify.js";
 
@@ -25,7 +28,12 @@ router.get('/checkPasswordToken', checkPasswordToken)
 //? setear nueva password
 router.put('/newPassword', newPassword)
 
-// router.put('/adminUpdate', verifyToken, verifyRole, adminUpdate)
-// router.put('/roleUpdate', verifyToken, verifyRole, roleUpdate)
+router.put('/changeEmail', verifyToken, changeEmail)
+router.put('/checkEmailToken', checkEmailToken)
+
+//: Admin
+router.put('/adminPwUpdate', verifyToken, verifyRole, adminPwUpdate)
+router.put('/roleUpdate', verifyToken, verifyRole, roleUpdate)
+router.put('/adminEmailUpdate', verifyToken, verifyRole, adminEmailUpdate)
 
 export { router }
