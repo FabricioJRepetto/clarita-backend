@@ -7,12 +7,12 @@ import {
     editClient,
     deleteClient
 } from "../controllers/client_controller.js"
-import { verifyToken } from "../controllers/verify.js"
+import { verifyToken, verifyRole } from "../controllers/verify.js"
 
+router.post('/', verifyToken, createClient)
 router.get('/', verifyToken, getClient)
 router.get('/all', verifyToken, getAllClients)
-router.post('/', verifyToken, createClient)
 router.put('/', verifyToken, editClient)
-router.delete('/', verifyToken, deleteClient)
+router.delete('/', verifyToken, verifyRole, deleteClient)
 
 export { router }

@@ -19,14 +19,10 @@ import { verifyToken, verifyRole } from "../controllers/verify.js";
 router.post('/signin', signin)
 router.post('/login', login)
 router.get('/autologin', autoLogin)
-//? cambiar password usando pw anterior
-router.put('/changePassword', verifyToken, changePassword)
-//? pedir cambio de password por mail
-router.get('/forgotPassword', forgotPassword)
-//? autentificar codigo de mail
-router.get('/checkPasswordToken', checkPasswordToken)
-//? setear nueva password
-router.put('/newPassword', newPassword)
+router.put('/changePassword', verifyToken, changePassword) // cambiar pw usando pw anterior
+router.get('/forgotPassword', forgotPassword) // pedir cambio de pw por mail
+router.get('/checkPasswordToken', checkPasswordToken) // autentificar codigo de mail
+router.put('/newPassword', newPassword) // setear nueva pw
 
 router.put('/changeEmail', verifyToken, changeEmail)
 router.put('/checkEmailToken', checkEmailToken)

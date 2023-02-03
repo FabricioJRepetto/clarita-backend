@@ -4,6 +4,7 @@ import User from '../models/user.js'
 import jwt from "jsonwebtoken";
 import { verifyJWT } from './verify.js';
 import { sendEmail } from '../utils/sendEmail.js';
+const { JWT_SECRET } = process.env
 
 const signin = async (req, res, next) => {
     try {
@@ -57,8 +58,8 @@ const login = async (req, res, next) => {
                     role
                 } = userFound,
                     aux = { id, email, user_name, role },
-                    token = jwt.sign({ user: aux }, process.env.JWT_SECRET, {
-                        expiresIn: 1000 * 60 * 60 * 24 * 7,
+                    token = jwt.sign({ user: aux }, JWT_SECRET, {
+                        expiresIn: 1000 * 60 * 60 * 24, // 24 hrs
                     });
 
                 return res.json(
@@ -249,7 +250,7 @@ const checkEmailToken = async (req, res, next) => {
         next(error)
     }
 }
-
+//: Admin
 const adminPwUpdate = async (req, res, next) => {
     try {
         const {

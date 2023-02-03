@@ -7,12 +7,17 @@ const ReservationSchema = new Schema(
             type: Schema.Types.ObjectId,
             ref: "Client"
         },
-        date: String,
+        checkin: String,
+        checkout: String,
         nights: Number,
-        cabin: String,
+        cabin: {
+            type: Schema.Types.ObjectId,
+            ref: "Cabin"
+        },
+        persons: Number,
         payment: {
-            type: String,
-            amount: Number
+            paymentType: { type: String },
+            amount: { type: Number }
         },
         notes: String
     },

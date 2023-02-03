@@ -7,11 +7,11 @@ import {
     editReservation,
     deleteReservation
 } from "../controllers/reservation_controller.js"
-import { verifyToken } from "../controllers/verify.js"
+import { verifyToken, verifyRole } from "../controllers/verify.js"
 
 router.get('/', verifyToken, getReservation)
 router.get('/all', verifyToken, getAllReservations)
-router.post('/', verifyToken, createReservation)
+router.post('/', verifyToken, createReservation) //: -
 router.put('/', verifyToken, editReservation)
 router.delete('/', verifyToken, deleteReservation)
 

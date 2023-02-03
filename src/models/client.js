@@ -3,12 +3,28 @@ const Schema = _Schema;
 
 const ClientSchema = new Schema(
     {
-        name: String,
-        dni: Number,
+        name: {
+            type: String,
+            required: true
+        },
+        dni: {
+            type: Number,
+            required: true,
+            unique: true,
+        },
         age: Number,
         telephone: Number,
-        origin: String,
-        vehicle: String,
+        profession: String,
+        civil_status: String,
+        origin: {
+            address: { type: String },
+            nationality: { type: String },
+            provenance: { type: String },
+        },
+        vehicle: {
+            plate: { type: String },
+            vehicleType: { type: String },
+        },
         notes: String
     },
     {
