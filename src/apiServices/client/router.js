@@ -6,8 +6,8 @@ import {
     createClient,
     editClient,
     deleteClient
-} from "../controllers/client_controller.js"
-import { verifyToken, verifyRole } from "../controllers/verify.js"
+} from "./controller.js"
+import { verifyToken, verifyRole } from "../../utils/verify.js"
 
 router.post('/', verifyToken, createClient)
 router.get('/', verifyToken, getClient)

@@ -13,8 +13,8 @@ import {
     adminPwUpdate,
     roleUpdate,
     adminEmailUpdate
-} from "../controllers/user_controller.js"
-import { verifyToken, verifyRole } from "../controllers/verify.js";
+} from "./controller.js"
+import { verifyToken, verifyRole } from "../../utils/verify.js";
 
 router.post('/signin', signin)
 router.post('/login', login)

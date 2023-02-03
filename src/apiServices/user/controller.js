@@ -1,9 +1,9 @@
 import * as dotenv from 'dotenv'
 dotenv.config()
-import User from '../models/user.js'
+import User from './model.js'
 import jwt from "jsonwebtoken";
-import { verifyJWT } from './verify.js';
-import { sendEmail } from '../utils/sendEmail.js';
+import { verifyJWT } from '../../utils/verify.js';
+import { sendEmail } from '../../microservices/sendEmail.js';
 const { JWT_SECRET } = process.env
 
 const signin = async (req, res, next) => {

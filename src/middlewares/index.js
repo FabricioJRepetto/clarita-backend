@@ -1,4 +1,4 @@
-const allowCors = () => async (req, res, next) => {
+export const allowCors = () => async (req, res, next) => {
     res.setHeader('Access-Control-Allow-Credentials', true)
     res.setHeader('Access-Control-Allow-Origin', '*')
     // res.setHeader('Access-Control-Allow-Origin', req.headers.origin)
@@ -15,4 +15,13 @@ const allowCors = () => async (req, res, next) => {
     next()
 }
 
-export default allowCors
+export const error404 = async (req, res, next) => {
+    next({ status: 404, message: "Incorrect method/endpoint" })
+}
+
+export const generalErrorHandler = async (err, req, res, next) => {
+    console.error(`\x1b[31m❌\x1b[0m · `, err)
+    const status = err.status || 500
+    const message = err.message || err
+    res.status(status).json({ error: message })
+}

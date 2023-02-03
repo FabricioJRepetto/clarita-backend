@@ -1,4 +1,4 @@
-import User from '../models/user.js'
+import User from '../apiServices/user/model.js'
 import jwt from "jsonwebtoken";
 
 const verifyJWT = async (token) => {

@@ -6,8 +6,8 @@ import {
     createReservation,
     editReservation,
     deleteReservation
-} from "../controllers/reservation_controller.js"
-import { verifyToken, verifyRole } from "../controllers/verify.js"
+} from "./controller.js"
+import { verifyToken, verifyRole } from "../../utils/verify.js"
 
 router.get('/', verifyToken, getReservation)
 router.get('/all', verifyToken, getAllReservations)

@@ -1,13 +1,15 @@
 import { Router } from "express"
 const router = Router()
-import { router as userRouter } from "./user_router.js"
-import { router as clientRouter } from "./client_router.js"
-import { router as reservationRouter } from "./reservation_router.js"
-import { router as cabinRouter } from "./cabin_router.js"
+import { router as userRouter } from "../apiServices/user/router.js"
+import { router as clientRouter } from "../apiServices/client/router.js"
+import { router as reservationRouter } from "../apiServices/reservation/router.js"
+import { router as cabinRouter } from "../apiServices/cabin/router.js"
+import { verifyToken } from "../utils/verify.js"
 
-import { verifyToken } from "../controllers/verify.js"
-
-router.use('/sensei', (req, res, next) => {
+router.get("/", (__, res) => {
+    res.send("Hello World!");
+});
+router.get('/sensei', (__, res) => {
     res.send('El facusama te bendice.')
 })
 

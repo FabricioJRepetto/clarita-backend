@@ -1,6 +1,6 @@
-import Reservation from "../models/reservation.js";
-import Cabin from "../models/cabin.js";
-import { doDatesOverlap } from "../utils/doDatesOverlap.js";
+import Reservation from "./model.js";
+import Cabin from "../cabin/model.js";
+import { doDatesOverlap } from "../../utils/doDatesOverlap.js";
 
 const overlapDetector = async (cabin, checkin, checkout) => {
     try {
