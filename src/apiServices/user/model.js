@@ -6,6 +6,11 @@ const Schema = _Schema;
 const UserSchema = new Schema(
     {
         user_name: String,
+        approved: {
+            type: Boolean,
+            required: true,
+            default: false
+        },
         email: {
             type: String,
             lowercase: true,

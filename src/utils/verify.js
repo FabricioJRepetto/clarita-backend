@@ -20,6 +20,7 @@ const verifyToken = async (req, res, next) => {
         const { user, userFound } = await verifyJWT(token)
 
         if (!userFound) return res.json({ error: "User not found" })
+        if (!userFound.approved) return res.json({ error: 'Tu cuenta no está autorizada. Contacta con un administrador para poder ingresar al sistema.' })
 
         req.user = user
 
@@ -40,7 +41,7 @@ const verifyRole = async (req, res, next) => {
         const { role } = req.user
 
         if (!role) return res.json({ error: 'Rol no definido.' })
-        if (role !== 'admin') return res.json({ error: 'Permisos insuficientes.' })
+        if (role !== 'admin' && role !== 'master') return res.json({ error: 'Permisos insuficientes.' })
 
         next()
     } catch (err) {

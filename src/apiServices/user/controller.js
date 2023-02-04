@@ -263,7 +263,12 @@ const adminPwUpdate = async (req, res, next) => {
 
         const targetUser = await User.findById(user_id)
 
-        if (!targetUser) return res.json({ error: 'No password received.' })
+        if (!targetUser) return res.json({ error: `No user found with this id: ${user_id}.` })
+        if (!role !== 'master') {
+            if (targetUser.role === 'admin' || targetUser.role === 'master') {
+                return res.json({ error: 'No puedes editar información de un administrador.' })
+            }
+        }
 
         targetUser.password = newPassword
         await targetUser.save()
@@ -287,7 +292,12 @@ const roleUpdate = async (req, res, next) => {
 
         const targetUser = await User.findById(user_id)
 
-        if (!targetUser) return res.json({ error: 'No password received.' })
+        if (!targetUser) return res.json({ error: `No user found with this id: ${user_id}.` })
+        if (!role !== 'master') {
+            if (targetUser.role === 'admin' || targetUser.role === 'master') {
+                return res.json({ error: 'No puedes editar información de un administrador.' })
+            }
+        }
 
         targetUser.role = newRole
         await targetUser.save()
@@ -312,11 +322,67 @@ const adminEmailUpdate = async (req, res, next) => {
         const targetUser = await User.findById(user_id)
 
         if (!targetUser) return res.json({ error: `No user found with this id: ${user_id}.` })
+        if (!role !== 'master') {
+            if (targetUser.role === 'admin' || targetUser.role === 'master') {
+                return res.json({ error: 'No puedes editar información de un administrador.' })
+            }
+        }
 
         targetUser.email = newEmail
         await targetUser.save()
 
         return res.json({ message: `Email del usuario ${targetUser.user_name} actualizado a "${newEmail}".` })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+const approveUser = async (req, res, next) => {
+    try {
+        const { user_id, approved } = req.body
+        if (!user_id) return res.json({ error: 'No ID' })
+
+        const targetUser = await User.findById(user_id)
+
+        if (!targetUser) return res.json({ error: `No user found with this id: ${user_id}.` })
+        if (!role !== 'master') {
+            if (targetUser.role === 'admin' || targetUser.role === 'master') {
+                return res.json({ error: 'No puedes editar información de un administrador.' })
+            }
+        }
+
+        targetUser.approved = approved
+        await targetUser.save()
+
+        return res.json({ message: 'Cuenta de usuario actualizada', targetUser })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getUser = async (req, res, next) => {
+    try {
+        const { id } = req.query
+        if (!id) return res.json({ error: 'No ID' })
+
+        const user = await User.findById(id)
+        if (!user) return res.json({ error: `No user found with this id: ${user_id}.` })
+
+        return res.json({ user })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getAllUsers = async (req, res, next) => {
+    try {
+        const { id } = req.user
+
+        const usersList = await User.find({ _id: { $ne: id } })
+        return res.json({ usersList })
 
     } catch (error) {
         next(error)
@@ -331,11 +397,13 @@ export {
     forgotPassword,
     checkPasswordToken,
     newPassword,
-
     changeEmail,
     checkEmailToken,
 
     adminPwUpdate,
     roleUpdate,
-    adminEmailUpdate
+    adminEmailUpdate,
+    approveUser,
+    getUser,
+    getAllUsers
 }

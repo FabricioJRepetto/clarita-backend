@@ -4,32 +4,28 @@ import {
     signin,
     login,
     autoLogin,
-    changePassword,
-    forgotPassword,
-    checkPasswordToken,
-    newPassword,
+    changePassword, // cambiar pw usando pw anterior
+    forgotPassword, // pedir cambio de pw por mail
+    checkPasswordToken, // autentificar codigo de mail
+    newPassword, // setear nueva pw
     changeEmail,
-    checkEmailToken,
-    adminPwUpdate,
-    roleUpdate,
-    adminEmailUpdate
+    checkEmailToken
 } from "./controller.js"
 import { verifyToken, verifyRole } from "../../utils/verify.js";
+import { router as adminRouter } from "./adminRouter.js";
 
 router.post('/signin', signin)
 router.post('/login', login)
 router.get('/autologin', autoLogin)
-router.put('/changePassword', verifyToken, changePassword) // cambiar pw usando pw anterior
-router.get('/forgotPassword', forgotPassword) // pedir cambio de pw por mail
-router.get('/checkPasswordToken', checkPasswordToken) // autentificar codigo de mail
-router.put('/newPassword', newPassword) // setear nueva pw
-
+router.put('/changePassword', verifyToken, changePassword)
+router.get('/forgotPassword', forgotPassword)
+router.get('/checkPasswordToken', checkPasswordToken)
+router.put('/newPassword', newPassword)
 router.put('/changeEmail', verifyToken, changeEmail)
 router.put('/checkEmailToken', checkEmailToken)
 
 //: Admin
-router.put('/adminPwUpdate', verifyToken, verifyRole, adminPwUpdate)
-router.put('/roleUpdate', verifyToken, verifyRole, roleUpdate)
-router.put('/adminEmailUpdate', verifyToken, verifyRole, adminEmailUpdate)
+router.use('/admin', verifyToken, verifyRole, adminRouter)
+
 
 export { router }
