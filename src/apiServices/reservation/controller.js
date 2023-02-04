@@ -1,4 +1,9 @@
 import Reservation from "./model.js";
+import { overlapDetector, removeFromCabin, updateCabin } from "./utils.js";
+import mongoose from 'mongoose';
+
+
+/*
 import Cabin from "../cabin/model.js";
 import { doDatesOverlap } from "../../utils/doDatesOverlap.js";
 
@@ -46,7 +51,7 @@ const removeFromCabin = async (cabin, id) => {
     await targetCabin.save()
     return
 }
-
+*/
 const createReservation = async (req, res, next) => {
     try {
         const {
@@ -75,12 +80,12 @@ const createReservation = async (req, res, next) => {
         if (!amount) return res.json({ error: 'No payment amount' })
         if (!notes) return res.json({ error: 'No notes' })
 
-        const { error } = await overlapDetector(cabin, checkin, checkout)
-        if (error) return res.json({ error })
+        const { error, reservation_id } = await overlapDetector(cabin, checkin, checkout)
+        if (error) return res.json({ error, reservation_id })
 
         const newReservation = await Reservation.create(
             {
-                client,
+                client: mongoose.Types.ObjectId(client),
                 checkin,
                 checkout,
                 nights,
@@ -95,6 +100,8 @@ const createReservation = async (req, res, next) => {
         const updatedCabin = await updateCabin(cabin, newReservation.id, checkin, checkout)
 
         const allReservations = await Reservation.find()
+            .populate('client')
+            .populate('cabin', 'name')
 
         return res.json({
             newReservation,
@@ -113,6 +120,8 @@ const getReservation = async (req, res, next) => {
         if (!id) return res.json({ error: 'No ID' })
 
         const reservation = await Reservation.findById(id)
+            .populate('client')
+            .populate('cabin', 'name')
         if (!reservation) return res.json({ error: 'No hay reservas con esa ID.' })
 
         return res.json({ reservation })
@@ -124,6 +133,8 @@ const getReservation = async (req, res, next) => {
 const getAllReservations = async (req, res, next) => {
     try {
         const allReservations = await Reservation.find({})
+            .populate('client')
+            .populate('cabin', 'name')
         return res.json({ reservationList: allReservations })
 
     } catch (error) {
@@ -161,16 +172,16 @@ const editReservation = async (req, res, next) => {
         if (!amount) return res.json({ error: 'No payment amount' })
         if (!notes) return res.json({ error: 'No notes' })
 
-        const { error } = await overlapDetector(cabin, checkin, checkout)
-        if (error && error.reservation_id !== id) return res.json({ error })
+        const { error, reservation_id } = await overlapDetector(cabin, checkin, checkout)
+        if (error && reservation_id !== id) return res.json({ error })
 
-        await removeFromCabin(cabin, newReservation.id)
+        await removeFromCabin(cabin, id)
 
         const newReservation = await Reservation.findByIdAndUpdate(
             id,
             {
                 $set: {
-                    client,
+                    client: mongoose.Types.ObjectId(client),
                     checkin,
                     checkout,
                     nights,
@@ -186,6 +197,8 @@ const editReservation = async (req, res, next) => {
         const updatedCabin = await updateCabin(cabin, newReservation.id, checkin, checkout)
 
         const allReservations = await Reservation.find({})
+            .populate('client')
+            .populate('cabin', 'name')
         return res.json({ newReservation, ReservationList: allReservations, updatedCabin })
 
     } catch (error) {

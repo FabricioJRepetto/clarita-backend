@@ -25,6 +25,7 @@ const ReservationSchema = new Schema(
         versionKey: false,
         toJSON: { getters: true, virtuals: true },
         toObject: { getters: true, virtuals: true },
+        strictPopulate: false
     }
 );
 

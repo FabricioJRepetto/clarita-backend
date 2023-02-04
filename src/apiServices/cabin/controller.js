@@ -1,14 +1,23 @@
-import Cabin from "./model.js";
+import Cabin from "./model.js"
+import { updateCabinGuest } from "./utils.js"
 
 const getCabin = async (req, res, next) => {
     try {
         const { id } = req.query
         if (!id) return res.json({ error: 'No cabin ID' })
 
-        const cabin = await Cabin.findById(id)
-        if (!cabin) return res.json({ error: 'No cabins with that ID' })
+        const { error } = await updateCabinGuest(id)
+        if (error) return res.json(error)
 
-        return res.json(cabin)
+        // populate path AND subdocument path
+        const cabin = await Cabin.findById(id)
+            .populate('current_guest')
+            .populate({
+                path: 'current_guest',
+                populate: 'client'
+            })
+
+        return res.json({ cabin })
 
     } catch (error) {
         next(error)
@@ -17,7 +26,21 @@ const getCabin = async (req, res, next) => {
 
 const getAllCabins = async (req, res, next) => {
     try {
+        const cabins = await Cabin.find()
+
+        for (let i = 0; i < cabins.length; i++) {
+            const cabin = cabins[i];
+            await updateCabinGuest(cabin.id)
+        }
+
+        // populate path AND subdocument path
         const cabinsList = await Cabin.find()
+            .populate('current_guest')
+            .populate({
+                path: 'current_guest',
+                populate: 'client'
+            })
+
         return res.json(cabinsList)
 
     } catch (error) {
@@ -29,6 +52,7 @@ const createCabin = async (req, res, next) => {
     try {
         const { name } = req.body
         if (!name) return res.json({ error: 'No cabin name' })
+        //: checkear que el numbre no se repita
 
         const newCabin = await Cabin.create(
             {
@@ -59,6 +83,7 @@ const editCabin = async (req, res, next) => {
 
         if (!id) return res.json({ error: 'No ID' })
         if (!name) return res.json({ error: 'No cabin name' })
+        //: checkear que el numbre no se repita
 
         const targetCabin = await Cabin.findById(id)
         if (!targetCabin) return res.json({ error: 'No cabins with that ID' })
