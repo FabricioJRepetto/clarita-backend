@@ -93,7 +93,7 @@ const autoLogin = async (req, res, next) => {
 
         if (!userFound) return res.json({ error: true, message: "User not found" })
 
-        return res.status(200).json({ message: 'Loged in succesfully', ...user })
+        return res.status(200).json({ ...user })
 
     } catch (error) {
         if (error?.name === "TokenExpiredError")

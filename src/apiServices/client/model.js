@@ -12,20 +12,16 @@ const ClientSchema = new Schema(
             required: true,
             unique: true,
         },
-        age: Number,
-        telephone: Number,
-        profession: String,
-        civil_status: String,
-        origin: {
-            address: { type: String },
-            nationality: { type: String },
-            provenance: { type: String },
-        },
-        vehicle: {
-            plate: { type: String },
-            vehicleType: { type: String },
-        },
-        notes: String
+        age: { type: Number },
+        telephone: { type: String },
+        profession: { type: String },
+        civil_status: { type: String },
+        address: { type: String },
+        nationality: { type: String },
+        provenance: { type: String },
+        plate: { type: String },
+        vehicleType: { type: String },
+        notes: { type: String }
     },
     {
         versionKey: false,

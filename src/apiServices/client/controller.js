@@ -9,45 +9,33 @@ const createClient = async (req, res, next) => {
             telephone,
             profession,
             civil_status,
-            origin,
-            origin: {
-                address,
-                nationality,
-                provenance
-            },
-            vehicle,
-            vehicle: {
-                plate,
-                type
-            },
+            address,
+            nationality,
+            provenance,
+            plate,
+            vehicleType,
             notes
         } = req.body
 
         if (!name) return res.json({ error: 'No name' })
         if (!dni) return res.json({ error: 'No DNI' })
-        if (!age) return res.json({ error: 'No age' })
-        if (!telephone) return res.json({ error: 'No telephone' })
-        if (!profession) return res.json({ error: 'No profession' })
-        if (!origin) return res.json({ error: 'No origin' })
-        if (!vehicle) return res.json({ error: 'No vehicle' })
-        if (!notes) return res.json({ error: 'No notes' })
+
+        // if (!telephone) return res.json({ error: 'No telephone' })
+        // if (!age) return res.json({ error: 'No age' })
+        // if (!profession) return res.json({ error: 'No profession' })
+        // if (!notes) return res.json({ error: 'No notes' })
+
+        // if (!address) return res.json({ error: 'No address' })
+        // if (!nationality) return res.json({ error: 'No nationality' })
+        // if (!provenance) return res.json({ error: 'No provenance' })
+
+        // if (!plate) return res.json({ error: 'No plate' })
+        // if (!vehicleType) return res.json({ error: 'No vehicleType' })
 
         const dniInUse = await Client.findOne({ dni })
         if (dniInUse) return res.json({ error: 'El DNI ya está en uso.' })
 
-        const newClient = await Client.create(
-            {
-                name,
-                dni,
-                age,
-                telephone,
-                profession,
-                civil_status,
-                origin,
-                vehicle,
-                notes
-            }
-        )
+        const newClient = await Client.create({ ...req.body })
 
         const allClients = await Client.find()
         return res.json({ clientList: allClients })
