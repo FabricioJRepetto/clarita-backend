@@ -11,7 +11,7 @@ const overlapDetector = async (cabin, checkin, checkout) => {
         )
         if (overlap) {
             return {
-                error: `Fechas no disponibles. Fechas requeridas: ${checkin} al ${checkout}. Reserva ya registrada: ${overlap.in} al ${overlap.out}, id de reserva: ${overlap.reservation_id}`,
+                error: `Fechas no disponibles. Fechas solicitadas en este registro: ${checkin} al ${checkout}. Conflicto con reserva existente: ${overlap.in} al ${overlap.out}, id de reserva: ${overlap.reservation_id}`,
                 reservation_id: overlap.reservation_id
             }
         } else {

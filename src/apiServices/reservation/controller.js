@@ -1,7 +1,7 @@
 import Reservation from "./model.js";
 import { overlapDetector, removeFromCabin, updateCabin } from "./utils.js";
 import mongoose from 'mongoose';
-
+import Cabin from '../cabin/model.js'
 
 /*
 import Cabin from "../cabin/model.js";
@@ -52,6 +52,7 @@ const removeFromCabin = async (cabin, id) => {
     return
 }
 */
+
 const createReservation = async (req, res, next) => {
     try {
         const {
@@ -61,24 +62,20 @@ const createReservation = async (req, res, next) => {
             nights,
             cabin,
             persons,
-            payment,
-            payment: {
-                paymentType,
-                amount
-            },
+            paymentType,
+            amount,
             notes
         } = req.body
 
         if (!client) return res.json({ error: 'No client ID' })
         if (!checkin) return res.json({ error: 'No checkin' })
         if (!checkout) return res.json({ error: 'No checkout' })
-        if (!nights) return res.json({ error: 'No nights' })
+        // if (!nights) return res.json({ error: 'No nights' })
         if (!cabin) return res.json({ error: 'No cabin' })
-        if (!persons) return res.json({ error: 'No persons' })
-        if (!payment) return res.json({ error: 'No payment' })
+        // if (!persons) return res.json({ error: 'No persons' })
         if (!paymentType) return res.json({ error: 'No payment paymentType' })
         if (!amount) return res.json({ error: 'No payment amount' })
-        if (!notes) return res.json({ error: 'No notes' })
+        // if (!notes) return res.json({ error: 'No notes' })
 
         const { error, reservation_id } = await overlapDetector(cabin, checkin, checkout)
         if (error) return res.json({ error, reservation_id })
@@ -91,7 +88,8 @@ const createReservation = async (req, res, next) => {
                 nights,
                 cabin,
                 persons,
-                payment,
+                paymentType,
+                amount,
                 notes
             }
         )
@@ -214,14 +212,13 @@ const deleteReservation = async (req, res, next) => {
         if (!existingID) return res.json({ error: 'No hay reservas con esa ID.' })
 
         const { cabin } = await Reservation.findOneAndDelete(id)
-
+        // update cabin reservations
         const cabinExists = await Cabin.findById(cabin)
-        if (!cabinExists) return { error: 'Wrong cabin ID' }
-
-        await removeFromCabin(cabin, id)
+        // cabin = cabin ID, id = reservation ID
+        if (cabinExists) await removeFromCabin(cabin, id)
 
         const allReservations = await Reservation.find({})
-        return res.json({ message: 'Reserva eliminada.', ReservationList: allReservations })
+        return res.json({ message: 'Reserva eliminada.', reservationList: allReservations })
 
     } catch (error) {
         next(error)
