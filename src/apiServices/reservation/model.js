@@ -15,10 +15,8 @@ const ReservationSchema = new Schema(
             ref: "Cabin"
         },
         persons: Number,
-        payment: {
-            paymentType: { type: String },
-            amount: { type: Number }
-        },
+        paymentType: { type: String },
+        amount: { type: Number },
         notes: String
     },
     {

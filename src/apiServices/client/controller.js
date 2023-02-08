@@ -1,3 +1,4 @@
+import { logging } from "googleapis/build/src/apis/logging/index.js";
 import Client from "./model.js";
 
 const createClient = async (req, res, next) => {
@@ -38,7 +39,7 @@ const createClient = async (req, res, next) => {
         const newClient = await Client.create({ ...req.body })
 
         const allClients = await Client.find()
-        return res.json({ clientList: allClients })
+        return res.json({ newClient, clientList: allClients })
 
     } catch (error) {
         next(error)
@@ -70,32 +71,37 @@ const getAllClients = async (req, res, next) => {
 
 const editClient = async (req, res, next) => {
     try {
+        const { id } = req.query
         const {
-            id,
             name,
             dni,
             age,
             telephone,
             profession,
             civil_status,
-            origin,
-            vehicle,
+            address,
+            nationality,
+            provenance,
+            plate,
+            vehicleType,
             notes
         } = req.body
 
         if (!id) return res.json({ error: 'No ID' })
         if (!name) return res.json({ error: 'No name' })
         if (!dni) return res.json({ error: 'No DNI' })
-        if (!age) return res.json({ error: 'No age' })
-        if (!telephone) return res.json({ error: 'No telephone' })
-        if (!profession) return res.json({ error: 'No profession' })
-        if (!civil_status) return res.json({ error: 'No civil_status' })
-        if (!origin) return res.json({ error: 'No origin' })
-        if (!vehicle) return res.json({ error: 'No vehicle' })
-        if (!notes) return res.json({ error: 'No notes' })
 
-        // si cambió, checkear que el DNI no esté en uso
+        // if (!age) return res.json({ error: 'No age' })
+        // if (!telephone) return res.json({ error: 'No telephone' })
+        // if (!profession) return res.json({ error: 'No profession' })
+        // if (!civil_status) return res.json({ error: 'No civil_status' })
+        // if (!origin) return res.json({ error: 'No origin' })
+        // if (!vehicle) return res.json({ error: 'No vehicle' })
+        // if (!notes) return res.json({ error: 'No notes' })
+
+        // si cambió, checkear que el DNI nuevo no esté en uso
         const client = await Client.findById(id)
+        console.log(client.dni, dni, typeof client.dni, typeof dni);
         if (client.dni !== dni) {
             const dniInUse = await Client.findOne({ dni })
             if (dniInUse) return res.json({ error: 'El nuevo DNI ya está en uso.' })
@@ -104,17 +110,7 @@ const editClient = async (req, res, next) => {
         const newClient = await Client.findByIdAndUpdate(
             id,
             {
-                $set: {
-                    name,
-                    dni,
-                    age,
-                    telephone,
-                    profession,
-                    civil_status,
-                    origin,
-                    vehicle,
-                    notes
-                }
+                $set: { ...req.body }
             },
             { new: true }
         )
