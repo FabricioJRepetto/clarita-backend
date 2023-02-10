@@ -146,19 +146,18 @@ const getAllReservations = async (req, res, next) => {
 
 const editReservation = async (req, res, next) => {
     try {
+        const { id } = req.query
         const {
-            id,
             client,
             checkin,
             checkout,
             nights,
             cabin,
             persons,
-            payment,
-            payment: {
-                paymentType,
-                amount
-            },
+            paymentType,
+            amount,
+            fees,
+            percentage,
             notes
         } = req.body
 
@@ -166,13 +165,12 @@ const editReservation = async (req, res, next) => {
         if (!client) return res.json({ error: 'No client ID' })
         if (!checkin) return res.json({ error: 'No checkin' })
         if (!checkout) return res.json({ error: 'No checkout' })
-        if (!nights) return res.json({ error: 'No nights' })
+        // if (!nights) return res.json({ error: 'No nights' })
         if (!cabin) return res.json({ error: 'No cabin' })
-        if (!persons) return res.json({ error: 'No persons' })
-        if (!payment) return res.json({ error: 'No payment' })
+        // if (!persons) return res.json({ error: 'No persons' })
         if (!paymentType) return res.json({ error: 'No payment paymentType' })
         if (!amount) return res.json({ error: 'No payment amount' })
-        if (!notes) return res.json({ error: 'No notes' })
+        // if (!notes) return res.json({ error: 'No notes' })
 
         const { error, reservation_id } = await overlapDetector(cabin, checkin, checkout)
         if (error && reservation_id !== id) return res.json({ error })
@@ -189,7 +187,10 @@ const editReservation = async (req, res, next) => {
                     nights,
                     cabin,
                     persons,
-                    payment,
+                    paymentType,
+                    amount,
+                    fees,
+                    percentage,
                     notes
                 }
             },
@@ -201,7 +202,11 @@ const editReservation = async (req, res, next) => {
         const allReservations = await Reservation.find({})
             .populate('client')
             .populate('cabin', 'name')
-        return res.json({ newReservation, ReservationList: allReservations, updatedCabin })
+        return res.json({
+            newReservation,
+            reservationsList: allReservations,
+            updatedCabin
+        })
 
     } catch (error) {
         next(error)
