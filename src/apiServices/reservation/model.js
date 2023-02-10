@@ -17,6 +17,8 @@ const ReservationSchema = new Schema(
         persons: Number,
         paymentType: { type: String },
         amount: { type: Number },
+        fees: { type: String },
+        percentage: { type: String },
         notes: String
     },
     {

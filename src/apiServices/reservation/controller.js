@@ -63,6 +63,8 @@ const createReservation = async (req, res, next) => {
             cabin,
             persons,
             paymentType,
+            fees,
+            percentage,
             amount,
             notes
         } = req.body
@@ -82,13 +84,15 @@ const createReservation = async (req, res, next) => {
 
         const newReservation = await Reservation.create(
             {
-                client: mongoose.Types.ObjectId(client),
+                client,
                 checkin,
                 checkout,
                 nights,
                 cabin,
                 persons,
                 paymentType,
+                fees,
+                percentage,
                 amount,
                 notes
             }
