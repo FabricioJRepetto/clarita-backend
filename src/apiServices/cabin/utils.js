@@ -8,16 +8,17 @@ export const updateCabinGuest = async (cabin_id) => {
 
     if (cabin.current_guest) {
         // current_guest es una ID de reserva
-        // checkear las fechas de la reserva
-        // si out es < a hoy, eliminar current_guest
         const reservation = await Reservation.findById(cabin.current_guest)
         if (!reservation) {
             cabin.current_guest = null
         } else {
-            const checkout = new Date(reservation.checkout),
+            const checkin = new Date(reservation.checkin),
+                checkout = new Date(reservation.checkout),
                 today = new Date(new Date().toLocaleDateString('en'))
 
-            if (checkout < today) {
+            // checkear las fechas de la reserva
+            // si out es < a hoy, eliminar current_guest
+            if (checkin > today || checkout < today) {
                 cabin.current_guest = null
             }
         }

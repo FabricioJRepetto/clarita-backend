@@ -50,13 +50,27 @@ const getAllCabins = async (req, res, next) => {
 
 const createCabin = async (req, res, next) => {
     try {
-        const { name } = req.body
+        const {
+            name,
+            identifier,
+            icon
+        } = req.body
+        let aux = {}
         if (!name) return res.json({ error: 'No cabin name' })
-        //: checkear que el numbre no se repita
+        if (!identifier) return res.json({ error: 'No cabin identifier' })
+        // if (!icon) return res.json({ error: 'No cabin icon' })
+
+        //: checkear que el nombre no se repita
+        const nameInUse = await Cabin.findOne({ name })
+        if (nameInUse) return res.json({ error: 'El nombre ya está en uso' })
+
+        name && (aux.name = name)
+        identifier && (aux.identifier = identifier)
+        icon && (aux.icon = icon)
 
         const newCabin = await Cabin.create(
             {
-                name,
+                ...aux,
                 reservations: []
             }
         )
@@ -76,19 +90,26 @@ const createCabin = async (req, res, next) => {
 
 const editCabin = async (req, res, next) => {
     try {
+        const { id } = req.query
         const {
-            id,
-            name
+            name,
+            identifier,
+            icon
         } = req.body
 
         if (!id) return res.json({ error: 'No ID' })
         if (!name) return res.json({ error: 'No cabin name' })
+
         //: checkear que el numbre no se repita
+        const nameInUse = await Cabin.findOne({ name })
+        if (nameInUse && nameInUse.id !== id) return res.json({ error: 'El nombre ya está en uso' })
 
         const targetCabin = await Cabin.findById(id)
         if (!targetCabin) return res.json({ error: 'No cabins with that ID' })
 
-        targetCabin.name = name
+        name && (targetCabin.name = name)
+        identifier && (targetCabin.identifier = identifier)
+        icon && (targetCabin.icon = icon)
         await targetCabin.save()
 
         const cabinsList = await Cabin.find()

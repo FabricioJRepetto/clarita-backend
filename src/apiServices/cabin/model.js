@@ -8,6 +8,11 @@ const CabinSchema = new Schema(
             required: true,
             unique: true
         },
+        identifier: {
+            type: String,
+            // required: true
+        },
+        icon: { type: String },
         current_guest: {
             type: Schema.Types.ObjectId,
             ref: "Reservation"

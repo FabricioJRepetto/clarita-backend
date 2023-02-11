@@ -1,4 +1,3 @@
-import { logging } from "googleapis/build/src/apis/logging/index.js";
 import Client from "./model.js";
 
 const createClient = async (req, res, next) => {
@@ -8,6 +7,7 @@ const createClient = async (req, res, next) => {
             dni,
             age,
             telephone,
+            email,
             profession,
             civil_status,
             address,
@@ -20,16 +20,14 @@ const createClient = async (req, res, next) => {
 
         if (!name) return res.json({ error: 'No name' })
         if (!dni) return res.json({ error: 'No DNI' })
-
-        // if (!telephone) return res.json({ error: 'No telephone' })
+        if (!dni) return res.json({ error: 'No DNI' })
+        if (!email) return res.json({ error: 'No email' })
         // if (!age) return res.json({ error: 'No age' })
         // if (!profession) return res.json({ error: 'No profession' })
         // if (!notes) return res.json({ error: 'No notes' })
-
         // if (!address) return res.json({ error: 'No address' })
         // if (!nationality) return res.json({ error: 'No nationality' })
         // if (!provenance) return res.json({ error: 'No provenance' })
-
         // if (!plate) return res.json({ error: 'No plate' })
         // if (!vehicleType) return res.json({ error: 'No vehicleType' })
 
@@ -77,6 +75,7 @@ const editClient = async (req, res, next) => {
             dni,
             age,
             telephone,
+            email,
             profession,
             civil_status,
             address,
@@ -90,7 +89,6 @@ const editClient = async (req, res, next) => {
         if (!id) return res.json({ error: 'No ID' })
         if (!name) return res.json({ error: 'No name' })
         if (!dni) return res.json({ error: 'No DNI' })
-
         // if (!age) return res.json({ error: 'No age' })
         // if (!telephone) return res.json({ error: 'No telephone' })
         // if (!profession) return res.json({ error: 'No profession' })

@@ -12,6 +12,11 @@ const ClientSchema = new Schema(
             required: true,
             unique: true,
         },
+        email: {
+            type: String,
+            required: true,
+            unique: true,
+        },
         age: { type: Number },
         telephone: { type: String },
         profession: { type: String },
