@@ -1,5 +1,6 @@
 import Cabin from "./model.js";
 import Reservation from "../reservation/model.js"
+import { dateSort } from "../../utils/sorter.js";
 
 //? update cabin's current reservation
 export const updateCabinGuest = async (cabin_id) => {
@@ -17,7 +18,7 @@ export const updateCabinGuest = async (cabin_id) => {
                 today = new Date(new Date().toLocaleDateString('en'))
 
             // checkear las fechas de la reserva
-            // si out es < a hoy, eliminar current_guest
+            // si in es > a hoy o out es < a hoy, eliminar current_guest
             if (checkin > today || checkout < today) {
                 cabin.current_guest = null
             }
@@ -41,7 +42,7 @@ export const updateCabinGuest = async (cabin_id) => {
                 cabin.current_guest = r.reservation_id
             }
         }
-        cabin.reservations = newReservations
+        cabin.reservations = newReservations.sort(dateSort)
     }
 
     await cabin.save()
