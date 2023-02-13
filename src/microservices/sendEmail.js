@@ -37,7 +37,7 @@ export const sendEmail = async (type, email, id) => {
         },
     });
 
-    //!! VOLVER
+    //!! TODO:
     //? armar bien el link
     // FRONT_URL + /user/resetPasswordToken?t= + token
     //? cambiar email
@@ -45,7 +45,7 @@ export const sendEmail = async (type, email, id) => {
     const token = jwt.sign({ user: { id, email } }, JWT_SECRET, {
         expiresIn: 1000 * 60 * 15,
     }),
-        link = `link del front + token: ${token}`
+        link = `http://localhost:3000/user/resetpassword?token=${token}`
 
     const template = {
         reset_pw: {
@@ -68,7 +68,7 @@ export const sendEmail = async (type, email, id) => {
                 <p>o con el siguiente enlace:</p>
                 <a href="${link}" target="_blank">${link}</a>
                 </br>
-                <b>${link}</b>
+                <b>${token}</b>
                 </br>
                 <i>este código expira en 15 minutos</i>
                 </section>`
@@ -108,6 +108,6 @@ export const sendEmail = async (type, email, id) => {
     };
 
     const result = await transport.sendMail(mailOptions);
-    console.log('error: ' + String(!!result.result.rejected.length));
+    console.log('error: ' + String(!!result?.result?.rejected?.length));
     return result
 }

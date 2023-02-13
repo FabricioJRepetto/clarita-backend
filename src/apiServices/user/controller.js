@@ -143,7 +143,8 @@ const forgotPassword = async (req, res, next) => {
     try {
         const { email } = req.body
 
-        if (!email) return res.json({ error: 'No user email.' })
+        // no especificar errores para que sea más seguro
+        if (!email) return res.json({ error: '-' })
 
         const userFound = await User.findOne({ email })
 
@@ -151,7 +152,8 @@ const forgotPassword = async (req, res, next) => {
             const result = await sendEmail('reset_pw', email, userFound.id);
             return res.json({ result });
         } else {
-            return res.json({ error: 'No hay usuarios asociados a ese email.' })
+            // no especificar errores para que sea más seguro
+            return res.json({ error: '-' })
         }
 
     } catch (error) {
