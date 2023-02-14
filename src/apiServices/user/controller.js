@@ -19,7 +19,6 @@ const signin = async (req, res, next) => {
         if (!password) return res.json({ error: 'No user password.' })
 
         const emailInUse = await User.findOne({ email })
-
         if (emailInUse) return res.json({ error: 'El email ya está registrado.' })
 
         const newUser = await User.create(
@@ -49,6 +48,7 @@ const login = async (req, res, next) => {
         const userFound = await User.findOne({ email })
 
         if (userFound) {
+            if (!userFound.approved) return res.json({ error: 'Cuenta aún no autorizada' })
             const correctPassword = await userFound.comparePassword(password)
             if (correctPassword) {
                 const {
@@ -59,7 +59,7 @@ const login = async (req, res, next) => {
                 } = userFound,
                     aux = { id, email, user_name, role },
                     token = jwt.sign({ user: aux }, JWT_SECRET, {
-                        expiresIn: 1000 * 60 * 60 * 24, // 24 hrs
+                        expiresIn: '24h', // 24 hrs
                     });
 
                 return res.json(

@@ -8,7 +8,9 @@ const verifyJWT = async (token) => {
 
         return { user: userDecoded.user, userFound }
     } catch (err) {
-        throw new Error(err)
+        if (err?.name === "TokenExpiredError") {
+            throw new Error("Token expirado")
+        } else throw new Error(err)
     }
 }
 

@@ -43,7 +43,7 @@ export const sendEmail = async (type, email, id) => {
     //? cambiar email
 
     const token = jwt.sign({ user: { id, email } }, JWT_SECRET, {
-        expiresIn: 1000 * 60 * 15,
+        expiresIn: '15m',
     }),
         link = `http://localhost:3000/user/resetpassword?token=${token}`
 
