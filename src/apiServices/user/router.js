@@ -11,6 +11,7 @@ import {
     changeEmail,
     checkEmailToken
 } from "./controller.js"
+import { getMessage } from "../announcement/controller.js";
 import { verifyToken, verifyRole } from "../../utils/verify.js";
 import { router as adminRouter } from "./adminRouter.js";
 
@@ -23,6 +24,7 @@ router.get('/checkPasswordToken', checkPasswordToken)
 router.put('/newPassword', newPassword)
 router.put('/changeEmail', verifyToken, changeEmail)
 router.put('/checkEmailToken', checkEmailToken)
+router.get('/announcement', getMessage)
 
 //: Admin
 router.use('/admin', verifyToken, verifyRole, adminRouter)
