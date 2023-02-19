@@ -23,6 +23,7 @@ const ClientSchema = new Schema(
         civil_status: { type: String },
         address: { type: String },
         nationality: { type: String },
+        country_code: { type: String },
         provenance: { type: String },
         plate: { type: String },
         vehicleType: { type: String },

@@ -76,6 +76,11 @@ const createCabin = async (req, res, next) => {
         )
 
         const cabinsList = await Cabin.find()
+            .populate('current_guest')
+            .populate({
+                path: 'current_guest',
+                populate: 'client'
+            })
 
         return res.json({
             message: 'Cabaña creada.',
@@ -113,6 +118,11 @@ const editCabin = async (req, res, next) => {
         await targetCabin.save()
 
         const cabinsList = await Cabin.find()
+            .populate('current_guest')
+            .populate({
+                path: 'current_guest',
+                populate: 'client'
+            })
 
         return res.json({
             message: 'Cabaña actualizada.',
@@ -134,6 +144,11 @@ const deleteCabin = async (req, res, next) => {
         await Cabin.findByIdAndDelete(id)
 
         const cabinsList = await Cabin.find()
+            .populate('current_guest')
+            .populate({
+                path: 'current_guest',
+                populate: 'client'
+            })
 
         return res.json({
             message: 'Cabaña eliminada.',
