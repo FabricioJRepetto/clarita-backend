@@ -12,6 +12,8 @@ const createReservation = async (req, res, next) => {
             nights,
             cabin,
             persons,
+            paymentStatus,
+            currency,
             paymentType,
             fees,
             percentage,
@@ -25,6 +27,8 @@ const createReservation = async (req, res, next) => {
         // if (!nights) return res.json({ error: 'No nights' })
         if (!cabin) return res.json({ error: 'No cabin' })
         // if (!persons) return res.json({ error: 'No persons' })
+        if (!req.body.hasOwnProperty('paymentStatus')) return res.json({ error: 'No payment paymentStatus' })
+        if (!currency) return res.json({ error: 'No payment currency' })
         if (!paymentType) return res.json({ error: 'No payment paymentType' })
         if (!amount) return res.json({ error: 'No payment amount' })
         // if (!notes) return res.json({ error: 'No notes' })
@@ -40,6 +44,8 @@ const createReservation = async (req, res, next) => {
                 nights,
                 cabin,
                 persons,
+                paymentStatus,
+                currency,
                 paymentType,
                 fees,
                 percentage,

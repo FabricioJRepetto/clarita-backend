@@ -15,14 +15,20 @@ const ReservationSchema = new Schema(
             ref: "Cabin"
         },
         persons: Number,
+        paymentStatus: {
+            type: Boolean,
+            default: true
+        },
+        currency: { type: String },
         paymentType: { type: String },
         amount: { type: Number },
         fees: { type: String },
-        percentage: { type: String },
+        percentage: { type: Number },
         notes: String
     },
     {
         versionKey: false,
+        timestamps: true,
         toJSON: { getters: true, virtuals: true },
         toObject: { getters: true, virtuals: true },
         strictPopulate: false
