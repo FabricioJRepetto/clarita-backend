@@ -3,7 +3,7 @@ import { start } from "./src/microservices/DBConnection.js";
 const PORT = process.env.PORT || 4000;
 import mongoose from "mongoose";
 const { DB_URL } = process.env;
-import { listen } from "../../index.js"
+// import { listen } from "../../index.js"
 
 export const listen = () => {
     app.listen(process.env.PORT, () => {
