@@ -1,5 +1,5 @@
 import app from "./src/app.js";
-import { start } from "./src/microservices/DBConnection.js";
+// import { start } from "./src/microservices/DBConnection.js";
 const PORT = process.env.PORT || 4000;
 import mongoose from "mongoose";
 const { DB_URL } = process.env;
