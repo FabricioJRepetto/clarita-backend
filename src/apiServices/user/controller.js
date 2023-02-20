@@ -330,6 +330,8 @@ const adminEmailUpdate = async (req, res, next) => {
             }
         }
 
+        //: verificar email unico
+
         targetUser.email = newEmail
         await targetUser.save()
 

@@ -9,7 +9,6 @@ import {
     approveUser
 } from "./controller.js"
 import {
-    getMessage,
     setMessage,
     deleteMessage,
 } from "../announcement/controller.js"
