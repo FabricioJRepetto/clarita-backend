@@ -55,6 +55,9 @@ app.use(allowCors())
 app.use(cors({
     origin: whitelist
 }));
+
+app.use("/", mongoConn);
+
 app.use(json({ limit: "50mb" }));
 app.use(urlencoded({ extended: true, limit: "50mb" }));
 app.use(morgan("dev"));
