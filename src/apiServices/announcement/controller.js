@@ -3,7 +3,7 @@ import Announcement from "./model.js";
 const getMessage = async (req, res, next) => {
     try {
         const announcements = await Announcement.findOne({})
-        res.json({ announcements: announcements.messages || [] })
+        res.json({ announcements: announcements?.messages || [] })
 
     } catch (err) {
         next(err)
