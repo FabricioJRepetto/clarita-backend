@@ -9,8 +9,8 @@ import {
 } from "./controller.js";
 import { verifyToken, verifyRole } from "../../utils/verify.js"
 
-router.get('/', verifyToken, verifyRole, getCabin)
-router.get('/all', verifyToken, verifyRole, getAllCabins)
+router.get('/', verifyToken, getCabin)
+router.get('/all', verifyToken, getAllCabins)
 router.post('/', verifyToken, verifyRole, createCabin)
 router.put('/', verifyToken, verifyRole, editCabin)
 router.delete('/', verifyToken, verifyRole, deleteCabin)
