@@ -7,8 +7,6 @@ import { allowCors, error404, generalErrorHandler } from './middlewares/index.js
 import morgan from "morgan";
 const { CLIENT_URL } = process.env;
 
-import mongoose from "mongoose";
-const { DB_URL } = process.env;
 
 const app = express();
 
@@ -17,34 +15,36 @@ const whitelist = {
 }
 
 //? Mongo
-mongoose.set('strictQuery', false);
-const options = {
-    useUnifiedTopology: true,
-    useNewUrlParser: true
-};
-let mongoConnected = null;
-const mongoConn = async (req, res, next) => {
-    try {
-        if (mongoConnected) return mongoConnected
+// import mongoose from "mongoose";
+// const { DB_URL } = process.env;
+// mongoose.set('strictQuery', false);
+// const options = {
+//     useUnifiedTopology: true,
+//     useNewUrlParser: true
+// };
+// let mongoConnected = null;
+// const mongoConn = async (req, res, next) => {
+//     try {
+//         if (mongoConnected) return mongoConnected
 
-        return mongoose.connect(DB_URL, options, (err) => {
-            if (err) console.log(err)
-            else {
-                mongoConnected = true
-                console.log("// MongoDB connected")
-            }
-        });
-    } catch (err) {
-        console.log("// MongoDB NOT connected")
-        console.log(err)
-    } finally {
-        mongoConnected
-            ? next()
-            : setTimeout(() => {
-                next()
-            }, 2000)
-    }
-}
+//         return mongoose.connect(DB_URL, options, (err) => {
+//             if (err) console.log(err)
+//             else {
+//                 mongoConnected = true
+//                 console.log("// MongoDB connected")
+//             }
+//         });
+//     } catch (err) {
+//         console.log("// MongoDB NOT connected")
+//         console.log(err)
+//     } finally {
+//         mongoConnected
+//             ? next()
+//             : setTimeout(() => {
+//                 next()
+//             }, 2000)
+//     }
+// }
 
 //* error de cors solucionado con
 //? allow cors (funciona)
@@ -56,7 +56,7 @@ app.use(cors({
     origin: whitelist
 }));
 
-app.use("/", mongoConn);
+// app.use("/", mongoConn);
 
 app.use(json({ limit: "50mb" }));
 app.use(urlencoded({ extended: true, limit: "50mb" }));
