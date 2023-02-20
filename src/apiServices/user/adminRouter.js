@@ -6,7 +6,8 @@ import {
     adminPwUpdate,
     roleUpdate,
     adminEmailUpdate,
-    approveUser
+    approveUser,
+    deleteUser
 } from "./controller.js"
 import {
     setMessage,
@@ -19,6 +20,7 @@ router.put('/password', adminPwUpdate)
 router.put('/email', adminEmailUpdate)
 router.put('/role', roleUpdate)
 router.put('/approve', approveUser)
+router.delete('/delete', deleteUser)
 
 router.post('/announcement', setMessage)
 router.delete('/announcement', deleteMessage)

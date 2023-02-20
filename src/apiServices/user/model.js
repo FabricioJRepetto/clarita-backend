@@ -5,7 +5,12 @@ const Schema = _Schema;
 
 const UserSchema = new Schema(
     {
-        user_name: String,
+        user_name: {
+            type: String,
+            lowercase: true,
+            unique: true,
+            required: true
+        },
         approved: {
             type: Boolean,
             required: true,
@@ -17,7 +22,10 @@ const UserSchema = new Schema(
             required: true,
             unique: true,
         },
-        password: String,
+        password: {
+            type: String,
+            required: true
+        },
         role: {
             type: String,
             default: 'staff',

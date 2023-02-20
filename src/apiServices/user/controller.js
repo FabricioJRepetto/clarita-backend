@@ -23,9 +23,7 @@ const signin = async (req, res, next) => {
 
         const newUser = await User.create(
             {
-                user_name,
-                email,
-                password
+                ...req.body
             }
         )
 
@@ -284,10 +282,8 @@ const adminPwUpdate = async (req, res, next) => {
 
 const roleUpdate = async (req, res, next) => {
     try {
-        const {
-            user_id,
-            newRole
-        } = req.body
+        const { role } = req.user
+        const { user_id, newRole } = req.body
 
         if (!user_id) return res.json({ error: 'No user id received.' })
         if (!newRole) return res.json({ error: 'No role received.' })
@@ -313,10 +309,8 @@ const roleUpdate = async (req, res, next) => {
 
 const adminEmailUpdate = async (req, res, next) => {
     try {
-        const {
-            user_id,
-            newEmail
-        } = req.body
+        const { role } = req.user
+        const { user_id, newEmail } = req.body
 
         if (!user_id) return res.json({ error: 'No user id received.' })
         if (!newEmail) return res.json({ error: 'No email received.' })
@@ -344,6 +338,7 @@ const adminEmailUpdate = async (req, res, next) => {
 
 const approveUser = async (req, res, next) => {
     try {
+        const { role } = req.user
         const { user_id, approved } = req.body
         if (!user_id) return res.json({ error: 'No ID' })
 
@@ -393,6 +388,22 @@ const getAllUsers = async (req, res, next) => {
     }
 }
 
+const deleteUser = async (req, res, next) => {
+    try {
+        const { id } = req.query
+        if (!id) return res.json({ error: 'No ID' })
+
+        const user = await User.findById(id)
+        if (!user) return res.json({ error: `No user found with this id: ${user_id}.` })
+
+        await User.findByIdAndDelete(id)
+        return res.json({ message: 'Cuenta de usuario eliminada' })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
 export {
     signin,
     login,
@@ -409,5 +420,6 @@ export {
     adminEmailUpdate,
     approveUser,
     getUser,
-    getAllUsers
+    getAllUsers,
+    deleteUser
 }
