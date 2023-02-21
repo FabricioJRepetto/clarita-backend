@@ -339,7 +339,7 @@ const adminEmailUpdate = async (req, res, next) => {
 const approveUser = async (req, res, next) => {
     try {
         const { role } = req.user
-        const { user_id, approved } = req.body
+        const { user_id } = req.body
         if (!user_id) return res.json({ error: 'No ID' })
 
         const targetUser = await User.findById(user_id)
@@ -351,7 +351,7 @@ const approveUser = async (req, res, next) => {
             }
         }
 
-        targetUser.approved = approved
+        targetUser.approved = !targetUser.approved
         await targetUser.save()
 
         return res.json({ message: 'Cuenta de usuario actualizada', targetUser })
