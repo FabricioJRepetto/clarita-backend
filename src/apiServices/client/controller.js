@@ -38,7 +38,7 @@ const createClient = async (req, res, next) => {
         const newClient = await Client.create({ ...req.body })
 
         const allClients = await Client.find()
-        return res.json({ newClient, clientList: allClients })
+        return res.json({ message: 'Cliente registrado.', newClient, clientList: allClients })
 
     } catch (error) {
         next(error)
@@ -116,7 +116,7 @@ const editClient = async (req, res, next) => {
         )
 
         const allClients = await Client.find()
-        return res.json({ newClient, clientList: allClients })
+        return res.json({ message: 'Ciente actualizado exitosamente.', newClient, clientList: allClients })
 
     } catch (error) {
         next(error)
@@ -130,6 +130,8 @@ const deleteClient = async (req, res, next) => {
 
         const existingID = await Client.findById(id)
         if (!existingID) return res.json({ error: 'No hay usuarios con esa ID.' })
+
+        //: TODO: buscar reservas de este usuario y eliminarlas?
 
         await Client.findByIdAndDelete(id)
 

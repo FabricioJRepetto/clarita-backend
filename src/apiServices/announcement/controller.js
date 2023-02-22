@@ -37,7 +37,7 @@ const setMessage = async (req, res, next) => {
                 }
             ]
             await announcements.save()
-            return res.json({ announcements: announcements.messages })
+            return res.json({ message: 'Anuncio publicado exitosamente.', announcements: announcements.messages })
         }
 
     } catch (err) {
@@ -57,7 +57,7 @@ const deleteMessage = async (req, res, next) => {
         } else {
             announcements.messages = []
             await announcements.save()
-            return res.json({ announcements: announcements.messages })
+            return res.json({ message: 'Anuncio eliminado exitosamente.', announcements: announcements.messages })
         }
 
     } catch (err) {

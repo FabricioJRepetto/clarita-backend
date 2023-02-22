@@ -83,7 +83,7 @@ const createCabin = async (req, res, next) => {
             })
 
         return res.json({
-            message: 'Cabaña creada.',
+            message: 'Cabaña creada exitosamente.',
             cabin: newCabin,
             cabinsList
         })
@@ -125,7 +125,7 @@ const editCabin = async (req, res, next) => {
             })
 
         return res.json({
-            message: 'Cabaña actualizada.',
+            message: 'Cabaña actualizada exitosamente.',
             cabin: targetCabin,
             cabinsList
         })
@@ -151,7 +151,7 @@ const deleteCabin = async (req, res, next) => {
             })
 
         return res.json({
-            message: 'Cabaña eliminada.',
+            message: 'Cabaña eliminada exitosamente.',
             cabinsList
         })
 

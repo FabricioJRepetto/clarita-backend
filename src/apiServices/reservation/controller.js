@@ -68,6 +68,7 @@ const createReservation = async (req, res, next) => {
             .populate('cabin', 'name')
 
         return res.json({
+            message: 'Reserva creada exitosamente.',
             newReservation,
             reservationsList: allReservations,
             updatedCabin
@@ -171,6 +172,7 @@ const editReservation = async (req, res, next) => {
             .populate('client')
             .populate('cabin', 'name')
         return res.json({
+            message: 'Reserva actualizada exitosamente.',
             newReservation,
             reservationsList: allReservations,
             updatedCabin
@@ -188,7 +190,7 @@ const deleteReservation = async (req, res, next) => {
         const existingID = await Reservation.findById(id)
         if (!existingID) return res.json({ error: 'No hay reservas con esa ID.' })
 
-        const { cabin } = await Reservation.findOneAndDelete(id)
+        const { cabin } = await Reservation.findByIdAndDelete(id)
         // update cabin reservations
         const cabinExists = await Cabin.findById(cabin)
         // cabin = cabin ID, id = reservation ID
