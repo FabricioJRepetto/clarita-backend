@@ -250,9 +250,11 @@ const checkEmailToken = async (req, res, next) => {
         next(error)
     }
 }
-//: Admin
+
+//: ADMIN ZONE
 const adminPwUpdate = async (req, res, next) => {
     try {
+        const { role, id } = req.user
         const {
             user_id,
             newPassword
@@ -273,7 +275,9 @@ const adminPwUpdate = async (req, res, next) => {
         targetUser.password = newPassword
         await targetUser.save()
 
-        return res.json({ message: `Contraseña del usuario ${targetUser.user_name} actualizada.` })
+        const usersList = await User.find({ _id: { $ne: id } })
+
+        return res.json({ message: `Contraseña del usuario ${targetUser.user_name} actualizada.`, usersList })
 
     } catch (error) {
         next(error)
@@ -282,7 +286,7 @@ const adminPwUpdate = async (req, res, next) => {
 
 const roleUpdate = async (req, res, next) => {
     try {
-        const { role } = req.user
+        const { role, id } = req.user
         const { user_id, newRole } = req.body
 
         if (!user_id) return res.json({ error: 'No user id received.' })
@@ -297,10 +301,12 @@ const roleUpdate = async (req, res, next) => {
             }
         }
 
-        targetUser.role = newRole
+        targetUser.role = newRole !== 'demote' ? newRole : ''
         await targetUser.save()
 
-        return res.json({ message: `Rol del usuario ${targetUser.user_name} actualizado a "${targetUser.role}".` })
+        const usersList = await User.find({ _id: { $ne: id } })
+
+        return res.json({ message: `Rol del usuario ${targetUser.user_name} actualizado a "${targetUser.role}".`, usersList })
 
     } catch (error) {
         next(error)
@@ -309,7 +315,7 @@ const roleUpdate = async (req, res, next) => {
 
 const adminEmailUpdate = async (req, res, next) => {
     try {
-        const { role } = req.user
+        const { role, id } = req.user
         const { user_id, newEmail } = req.body
 
         if (!user_id) return res.json({ error: 'No user id received.' })
@@ -329,7 +335,9 @@ const adminEmailUpdate = async (req, res, next) => {
         targetUser.email = newEmail
         await targetUser.save()
 
-        return res.json({ message: `Email del usuario ${targetUser.user_name} actualizado a "${newEmail}".` })
+        const usersList = await User.find({ _id: { $ne: id } })
+
+        return res.json({ message: `Email del usuario ${targetUser.user_name} actualizado a "${newEmail}".`, usersList })
 
     } catch (error) {
         next(error)
@@ -338,7 +346,7 @@ const adminEmailUpdate = async (req, res, next) => {
 
 const approveUser = async (req, res, next) => {
     try {
-        const { role } = req.user
+        const { role, id } = req.user
         const { user_id } = req.body
         if (!user_id) return res.json({ error: 'No ID' })
 
@@ -350,11 +358,18 @@ const approveUser = async (req, res, next) => {
                 return res.json({ error: 'No puedes editar información de un administrador.' })
             }
         }
-
-        targetUser.approved = !targetUser.approved
+        if (targetUser.approved) {
+            targetUser.approved = false
+            targetUser.role = ''
+        } else {
+            targetUser.approved = true
+            targetUser.role = 'staff'
+        }
         await targetUser.save()
 
-        return res.json({ message: 'Cuenta de usuario actualizada', targetUser })
+        const usersList = await User.find({ _id: { $ne: id } })
+
+        return res.json({ message: 'Cuenta de usuario actualizada', targetUser, usersList })
 
     } catch (error) {
         next(error)
@@ -390,14 +405,23 @@ const getAllUsers = async (req, res, next) => {
 
 const deleteUser = async (req, res, next) => {
     try {
-        const { id } = req.query
+        const { role, id } = req.user
+        const { id: target_id } = req.query
         if (!id) return res.json({ error: 'No ID' })
 
-        const user = await User.findById(id)
+        const user = await User.findById(target_id)
         if (!user) return res.json({ error: `No user found with this id: ${user_id}.` })
+        if (!role !== 'master') {
+            if (user.role === 'admin' || user.role === 'master') {
+                return res.json({ error: 'No puedes eliminar a un administrador.' })
+            }
+        }
 
-        await User.findByIdAndDelete(id)
-        return res.json({ message: 'Cuenta de usuario eliminada' })
+        await User.findByIdAndDelete(target_id)
+
+        const usersList = await User.find({ _id: { $ne: id } })
+
+        return res.json({ message: 'Cuenta de usuario eliminada', usersList })
 
     } catch (error) {
         next(error)
@@ -419,7 +443,8 @@ export {
     roleUpdate,
     adminEmailUpdate,
     approveUser,
+    deleteUser,
+
     getUser,
-    getAllUsers,
-    deleteUser
+    getAllUsers
 }

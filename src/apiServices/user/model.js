@@ -26,11 +26,7 @@ const UserSchema = new Schema(
             type: String,
             required: true
         },
-        role: {
-            type: String,
-            default: 'staff',
-            required: true
-        }
+        role: { type: String }
     },
     {
         versionKey: false,

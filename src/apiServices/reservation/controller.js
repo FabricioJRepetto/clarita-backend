@@ -16,15 +16,17 @@ const createReservation = async (req, res, next) => {
             currency,
             paymentType,
             fees,
+            mpDetails,
             percentage,
             amount,
+            extraPayments,
             notes
         } = req.body
 
         if (!client) return res.json({ error: 'No client ID' })
         if (!checkin) return res.json({ error: 'No checkin' })
         if (!checkout) return res.json({ error: 'No checkout' })
-        // if (!nights) return res.json({ error: 'No nights' })
+        if (!nights) return res.json({ error: 'No nights' })
         if (!cabin) return res.json({ error: 'No cabin' })
         // if (!persons) return res.json({ error: 'No persons' })
         if (!req.body.hasOwnProperty('paymentStatus')) return res.json({ error: 'No payment paymentStatus' })
@@ -48,8 +50,10 @@ const createReservation = async (req, res, next) => {
                 currency,
                 paymentType,
                 fees,
+                mpDetails,
                 percentage,
                 amount,
+                extraPayments,
                 notes
             }
         )
@@ -113,7 +117,9 @@ const editReservation = async (req, res, next) => {
             paymentType,
             amount,
             fees,
+            mpDetails,
             percentage,
+            extraPayments,
             notes
         } = req.body
 
@@ -121,7 +127,7 @@ const editReservation = async (req, res, next) => {
         if (!client) return res.json({ error: 'No client ID' })
         if (!checkin) return res.json({ error: 'No checkin' })
         if (!checkout) return res.json({ error: 'No checkout' })
-        // if (!nights) return res.json({ error: 'No nights' })
+        if (!nights) return res.json({ error: 'No nights' })
         if (!cabin) return res.json({ error: 'No cabin' })
         // if (!persons) return res.json({ error: 'No persons' })
         if (!paymentType) return res.json({ error: 'No payment paymentType' })
@@ -146,7 +152,9 @@ const editReservation = async (req, res, next) => {
                     paymentType,
                     amount,
                     fees,
+                    mpDetails,
                     percentage,
+                    extraPayments,
                     notes
                 }
             },

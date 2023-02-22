@@ -19,11 +19,23 @@ const ReservationSchema = new Schema(
             type: Boolean,
             default: true
         },
-        currency: { type: String },
         paymentType: { type: String },
+        currency: { type: String },
         amount: { type: Number },
         fees: { type: String },
+        mpDetails: { type: String },
         percentage: { type: Number },
+        extraPayments: [
+            {
+                id: { type: String },
+                paymentType: { type: String },
+                currency: { type: String },
+                amount: { type: Number },
+                fees: { type: String },
+                mpDetails: { type: String },
+                percentage: { type: Number },
+            }
+        ],
         notes: String
     },
     {
