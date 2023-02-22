@@ -12,10 +12,7 @@ const ClientSchema = new Schema(
             required: true,
             unique: true,
         },
-        email: {
-            type: String,
-            unique: true,
-        },
+        email: { type: String },
         age: { type: Number },
         telephone: { type: String },
         profession: { type: String },
