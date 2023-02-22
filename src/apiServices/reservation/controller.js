@@ -5,6 +5,7 @@ import Cabin from '../cabin/model.js'
 
 const createReservation = async (req, res, next) => {
     try {
+        const { user_name } = req.user
         const {
             client,
             checkin,
@@ -54,7 +55,8 @@ const createReservation = async (req, res, next) => {
                 percentage,
                 amount,
                 extraPayments,
-                notes
+                notes,
+                creator: user_name
             }
         )
 
@@ -106,6 +108,7 @@ const getAllReservations = async (req, res, next) => {
 
 const editReservation = async (req, res, next) => {
     try {
+        const { user_name } = req.user
         const { id } = req.query
         const {
             client,
@@ -155,7 +158,8 @@ const editReservation = async (req, res, next) => {
                     mpDetails,
                     percentage,
                     extraPayments,
-                    notes
+                    notes,
+                    creator: user_name
                 }
             },
             { new: true }
