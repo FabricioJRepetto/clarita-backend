@@ -22,7 +22,7 @@ const createClient = async (req, res, next) => {
         if (!name) return res.json({ error: 'No name' })
         if (!dni) return res.json({ error: 'No DNI' })
         if (!dni) return res.json({ error: 'No DNI' })
-        if (!email) return res.json({ error: 'No email' })
+        // if (!email) return res.json({ error: 'No email' })
         // if (!age) return res.json({ error: 'No age' })
         // if (!profession) return res.json({ error: 'No profession' })
         // if (!notes) return res.json({ error: 'No notes' })
