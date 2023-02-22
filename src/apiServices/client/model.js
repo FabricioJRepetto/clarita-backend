@@ -12,7 +12,14 @@ const ClientSchema = new Schema(
             required: true,
             unique: true,
         },
-        email: { type: String },
+        email: {
+            type: String,
+            trim: true,
+            index: {
+                unique: true,
+                partialFilterExpression: { email: { $type: "string" } }
+            }
+        },
         age: { type: Number },
         telephone: { type: String },
         profession: { type: String },
