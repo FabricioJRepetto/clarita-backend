@@ -118,7 +118,9 @@ const editReservation = async (req, res, next) => {
             nights,
             cabin,
             persons,
+            paymentStatus,
             paymentType,
+            currency,
             amount,
             fees,
             mpDetails,
@@ -134,6 +136,7 @@ const editReservation = async (req, res, next) => {
         if (!nights) return res.json({ error: 'No nights' })
         if (!cabin) return res.json({ error: 'No cabin' })
         // if (!persons) return res.json({ error: 'No persons' })
+        if (!req.body.hasOwnProperty('paymentStatus')) return res.json({ error: 'No payment paymentStatus' })
         if (!paymentType) return res.json({ error: 'No payment paymentType' })
         if (!amount) return res.json({ error: 'No payment amount' })
         // if (!notes) return res.json({ error: 'No notes' })
@@ -153,7 +156,9 @@ const editReservation = async (req, res, next) => {
                     nights,
                     cabin,
                     persons,
+                    paymentStatus,
                     paymentType,
+                    currency,
                     amount,
                     fees,
                     mpDetails,
@@ -204,10 +209,66 @@ const deleteReservation = async (req, res, next) => {
     }
 }
 
+const quickPayment = async (req, res, next) => {
+    try {
+        const { id } = req.query
+        const {
+            paymentStatus,
+            paymentType,
+            amount,
+            currency,
+            fees,
+            mpDetails,
+            percentage
+        } = req.body
+
+        if (!id) return res.json({ error: 'No ID' })
+        if (!req.body.hasOwnProperty('paymentStatus')) return res.json({ error: 'No payment paymentStatus' })
+        if (!paymentType) return res.json({ error: 'No payment paymentType' })
+        if (!amount) return res.json({ error: 'No payment amount' })
+
+        const reserv = await Reservation.findById(id)
+        if (!reserv) return res.json({ error: 'No hay reservas con esa ID.' })
+
+        const extra_id = !!reserv?.extraPayments?.length ? 'extra' + (reserv?.extraPayments?.length + 1) : 'extra1',
+            data = {
+                id: extra_id,
+                paymentType,
+                currency,
+                amount,
+                fees,
+                mpDetails,
+                percentage,
+            }
+
+        if (reserv?.extraPayments) {
+            reserv.extraPayments = [...reserv.extraPayments, data]
+        } else {
+            reserv.extraPayments = [data]
+        }
+
+        if (paymentStatus) {
+            reserv.paymentStatus = true
+        }
+
+        await reserv.save()
+
+        const reservationsList = await Reservation.find({})
+            .populate('client')
+            .populate('cabin', 'name')
+
+        return res.json({ message: 'Pagos de la reserva actualizados.', reserv, reservationsList })
+
+    } catch (err) {
+        next(err)
+    }
+}
+
 export {
     getReservation,
     getAllReservations,
     createReservation,
     editReservation,
-    deleteReservation
+    deleteReservation,
+    quickPayment
 }

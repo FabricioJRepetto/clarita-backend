@@ -8,9 +8,7 @@ const verifyJWT = async (token) => {
 
         return { user: userDecoded.user, userFound }
     } catch (err) {
-        if (err?.name === "TokenExpiredError") {
-            throw new Error("Token expirado")
-        } else throw new Error(err)
+        throw err
     }
 }
 
@@ -28,10 +26,9 @@ const verifyToken = async (req, res, next) => {
 
         next()
     } catch (err) {
-        console.log(err);
         if (err?.name === "TokenExpiredError")
-            return res.json({
-                error: "Sesión expirada, inicia sesión nuevamente.",
+            return res.status(401).json({
+                error: "Sesión expirada, vuelve a loguear para identificarte.",
                 expiredToken: true,
             });
         return res.json({ error: "verifyToken error: " + err });

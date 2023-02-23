@@ -62,6 +62,7 @@ const login = async (req, res, next) => {
 
                 return res.json(
                     {
+                        message: `Hola ${user_name.split(' ')[0]}!`,
                         id,
                         email,
                         user_name,
@@ -89,7 +90,7 @@ const autoLogin = async (req, res, next) => {
 
         const { user, userFound } = await verifyJWT(token)
 
-        if (!userFound) return res.json({ error: true, message: "User not found" })
+        if (!userFound) return res.json({ error: "User not found" })
 
         return res.status(200).json({ ...user })
 
