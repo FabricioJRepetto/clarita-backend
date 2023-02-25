@@ -9,8 +9,19 @@ const ClientSchema = new Schema(
         },
         dni: {
             type: String,
-            required: true,
-            unique: true,
+            trim: true,
+            index: {
+                unique: true,
+                partialFilterExpression: { dni: { $type: "string" } }
+            }
+        },
+        cuil: {
+            type: String,
+            trim: true,
+            index: {
+                unique: true,
+                partialFilterExpression: { cuil: { $type: "string" } }
+            }
         },
         email: {
             type: String,
@@ -19,6 +30,10 @@ const ClientSchema = new Schema(
                 unique: true,
                 partialFilterExpression: { email: { $type: "string" } }
             }
+        },
+        company: {
+            type: Boolean,
+            default: false
         },
         age: { type: Number },
         telephone: { type: String },
