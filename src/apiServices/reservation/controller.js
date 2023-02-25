@@ -21,6 +21,7 @@ const createReservation = async (req, res, next) => {
             percentage,
             amount,
             extraPayments,
+            total,
             notes
         } = req.body
 
@@ -56,6 +57,7 @@ const createReservation = async (req, res, next) => {
                 amount,
                 extraPayments,
                 notes,
+                total,
                 creator: user_name
             }
         )
@@ -126,6 +128,7 @@ const editReservation = async (req, res, next) => {
             mpDetails,
             percentage,
             extraPayments,
+            total,
             notes
         } = req.body
 
@@ -165,6 +168,7 @@ const editReservation = async (req, res, next) => {
                     percentage,
                     extraPayments,
                     notes,
+                    total,
                     creator: user_name
                 }
             },

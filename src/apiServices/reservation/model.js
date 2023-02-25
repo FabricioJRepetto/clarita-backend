@@ -36,6 +36,7 @@ const ReservationSchema = new Schema(
                 percentage: { type: Number },
             }
         ],
+        total: { type: Number },
         notes: String,
         creator: { type: String }
     },
