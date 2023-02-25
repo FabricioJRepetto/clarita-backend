@@ -38,7 +38,8 @@ const ReservationSchema = new Schema(
         ],
         total: { type: Number },
         notes: String,
-        creator: { type: String }
+        creator: { type: String },
+        editor: { type: String },
     },
     {
         versionKey: false,

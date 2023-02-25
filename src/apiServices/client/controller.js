@@ -2,6 +2,7 @@ import Client from "./model.js";
 
 const createClient = async (req, res, next) => {
     try {
+        const { user_name } = req.user
         const {
             name,
 
@@ -37,7 +38,7 @@ const createClient = async (req, res, next) => {
             if (cuilInUse) return res.json({ error: 'El CUIL ya está en uso.' })
         }
 
-        const newClient = await Client.create({ ...req.body })
+        const newClient = await Client.create({ ...req.body, creator: user_name })
 
         const allClients = await Client.find()
         return res.json({ message: 'Cliente registrado.', newClient, clientList: allClients })

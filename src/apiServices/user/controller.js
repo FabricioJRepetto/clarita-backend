@@ -18,6 +18,9 @@ const signin = async (req, res, next) => {
         if (!email) return res.json({ error: 'No user email.' })
         if (!password) return res.json({ error: 'No user password.' })
 
+        const user_nameInUse = await User.findOne({ user_name })
+        if (user_nameInUse) return res.json({ error: 'El nombre de usuario ya está registrado.' })
+
         const emailInUse = await User.findOne({ email })
         if (emailInUse) return res.json({ error: 'El email ya está registrado.' })
 
@@ -40,10 +43,13 @@ const login = async (req, res, next) => {
             email,
             password
         } = req.body
-        if (!email) return res.json({ error: 'No user email.' })
+        if (!email) return res.json({ error: 'No user name / email.' })
         if (!password) return res.json({ error: 'No user password.' })
 
-        const userFound = await User.findOne({ email })
+        const emailRe = new RegExp(/[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/)
+        let query = emailRe.test(email) ? 'email' : 'user_name'
+
+        const userFound = await User.findOne({ [query]: email })
 
         if (userFound) {
             if (!userFound.approved) return res.json({ error: 'Cuenta aún no autorizada' })
@@ -115,7 +121,7 @@ const changePassword = async (req, res, next) => {
         if (!id) return res.json({ error: 'No user id.' })
         if (!password) return res.json({ error: 'No old password.' })
         if (!newPassword) return res.json({ error: 'No new password.' })
-        if (password === newPassword) return res.json({ error: 'New and old passwords can not be the same.' })
+        if (password === newPassword) return res.json({ error: 'Crea una contraseña diferente a la anterior.' })
 
         const userFound = await User.findById(id)
 
@@ -267,7 +273,7 @@ const adminPwUpdate = async (req, res, next) => {
         const targetUser = await User.findById(user_id)
 
         if (!targetUser) return res.json({ error: `No user found with this id: ${user_id}.` })
-        if (!role !== 'master') {
+        if (role !== 'master') {
             if (targetUser.role === 'admin' || targetUser.role === 'master') {
                 return res.json({ error: 'No puedes editar información de un administrador.' })
             }
@@ -296,7 +302,7 @@ const roleUpdate = async (req, res, next) => {
         const targetUser = await User.findById(user_id)
 
         if (!targetUser) return res.json({ error: `No user found with this id: ${user_id}.` })
-        if (!role !== 'master') {
+        if (role !== 'master') {
             if (targetUser.role === 'admin' || targetUser.role === 'master') {
                 return res.json({ error: 'No puedes editar información de un administrador.' })
             }
@@ -325,7 +331,7 @@ const adminEmailUpdate = async (req, res, next) => {
         const targetUser = await User.findById(user_id)
 
         if (!targetUser) return res.json({ error: `No user found with this id: ${user_id}.` })
-        if (!role !== 'master') {
+        if (role !== 'master') {
             if (targetUser.role === 'admin' || targetUser.role === 'master') {
                 return res.json({ error: 'No puedes editar información de un administrador.' })
             }
@@ -354,7 +360,7 @@ const approveUser = async (req, res, next) => {
         const targetUser = await User.findById(user_id)
 
         if (!targetUser) return res.json({ error: `No user found with this id: ${user_id}.` })
-        if (!role !== 'master') {
+        if (role !== 'master') {
             if (targetUser.role === 'admin' || targetUser.role === 'master') {
                 return res.json({ error: 'No puedes editar información de un administrador.' })
             }
@@ -412,7 +418,7 @@ const deleteUser = async (req, res, next) => {
 
         const user = await User.findById(target_id)
         if (!user) return res.json({ error: `No user found with this id: ${user_id}.` })
-        if (!role !== 'master') {
+        if (role !== 'master') {
             if (user.role === 'admin' || user.role === 'master') {
                 return res.json({ error: 'No puedes eliminar a un administrador.' })
             }

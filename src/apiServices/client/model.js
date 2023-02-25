@@ -45,10 +45,12 @@ const ClientSchema = new Schema(
         provenance: { type: String },
         plate: { type: String },
         vehicleType: { type: String },
-        notes: { type: String }
+        notes: { type: String },
+        creator: { type: String }
     },
     {
         versionKey: false,
+        timestamps: true,
         toJSON: { getters: true, virtuals: true },
         toObject: { getters: true, virtuals: true },
     }

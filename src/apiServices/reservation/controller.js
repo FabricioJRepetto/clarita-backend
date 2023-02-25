@@ -169,7 +169,7 @@ const editReservation = async (req, res, next) => {
                     extraPayments,
                     notes,
                     total,
-                    creator: user_name
+                    editor: user_name
                 }
             },
             { new: true }
