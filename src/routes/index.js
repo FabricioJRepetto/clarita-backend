@@ -4,6 +4,7 @@ import { router as userRouter } from "../apiServices/user/router.js"
 import { router as clientRouter } from "../apiServices/client/router.js"
 import { router as reservationRouter } from "../apiServices/reservation/router.js"
 import { router as cabinRouter } from "../apiServices/cabin/router.js"
+import { router as ledgerRouter } from "../apiServices/ledger/router.js"
 import { verifyToken } from "../utils/verify.js"
 
 router.get("/", (__, res) => {
@@ -17,5 +18,6 @@ router.use('/user', userRouter)
 router.use('/client', verifyToken, clientRouter)
 router.use('/reservation', verifyToken, reservationRouter)
 router.use('/cabin', verifyToken, cabinRouter)
+router.use('/ledger', verifyToken, ledgerRouter)
 
 export default router

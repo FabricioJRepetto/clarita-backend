@@ -191,6 +191,7 @@ const editReservation = async (req, res, next) => {
         next(error)
     }
 }
+
 const deleteReservation = async (req, res, next) => {
     try {
         const { id } = req.query
