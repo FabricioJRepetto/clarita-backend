@@ -2,6 +2,7 @@ import { Router } from "express"
 const router = Router()
 import {
     getAll,
+    getWeek,
     getMonth,
     getYear,
     newEntry,
@@ -10,7 +11,8 @@ import {
 } from "./controller.js"
 import { verifyToken, verifyRole } from "../../utils/verify.js"
 
-router.get('/', verifyToken, getMonth)
+router.get('/', verifyToken, getWeek)
+router.get('/month', verifyToken, getMonth)
 router.get('/year', verifyToken, getYear)
 router.get('/all', verifyToken, getAll)
 router.post('/', verifyToken, newEntry)
