@@ -51,6 +51,18 @@ LedgerSchema.virtual("balance").get(function () {
     balance.total = balance.income - balance.expense
     return balance;
 });
+// Ledger.badCurrencyList
+LedgerSchema.virtual("badCurrencyList").get(function () {
+    const list = new Set
+
+    this.entries.forEach(m => {
+        if (m.currency !== 'ARS') {
+            list.add(m.date)
+        }
+    })
+    Array.from(list)
+    return Array.from(list);
+});
 
 
 

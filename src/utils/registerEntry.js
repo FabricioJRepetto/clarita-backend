@@ -1,0 +1,65 @@
+import Ledger from "../apiServices/ledger/model.js";
+import Client from "../apiServices/client/model.js";
+
+export const registerEntry = async (data, creator, reservation) => {
+    const {
+        client,
+        checkin,
+        amount,
+        currency,
+        extraPayments
+    } = data
+
+    //? agrego el movimiento a las cuentas
+    const today = new Date(new Date().toLocaleDateString('en'))
+    if (new Date(checkin) >= today) {
+        const clientData = await Client.findById(client)
+
+        const entry = {
+            date: today.toLocaleDateString('en'),
+            entryType: 'income',
+            description: `Reserva de ${clientData.name} (${clientData.nationality}) ${!!extraPayments?.length ? '- Pago #1' : ''}`,
+            amount,
+            currency,
+            reservation,
+            creator
+        }
+        // console.log(entry);
+
+        const MONTH = new Date(today).getMonth()
+        const YEAR = new Date(today).getFullYear()
+
+        const ledger = await Ledger.findOne({
+            month: MONTH,
+            year: YEAR
+        })
+
+        if (ledger) {
+            ledger.entries.push(entry)
+            await ledger.save()
+
+        } else {
+            await Ledger.create({
+                month: MONTH,
+                year: YEAR,
+                entries: [entry]
+            })
+        }
+
+        if (!!extraPayments?.length) {
+            extraPayments.forEach((e, i) => {
+                entry.description = `${entry.description} - Pago #${i + 2}`
+                entry.amount = e.amount
+                entry.currency = e.currency
+
+                ledger.entries.push(entry)
+            });
+            await ledger.save()
+        }
+
+    } else {
+        // ##### no se guarda
+    }
+
+    return
+}

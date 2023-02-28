@@ -2,6 +2,7 @@ import Reservation from "./model.js";
 import { overlapDetector, removeFromCabin, updateCabin } from "./utils.js";
 import mongoose from 'mongoose';
 import Cabin from '../cabin/model.js'
+import { registerEntry } from "../../utils/registerEntry.js";
 
 const createReservation = async (req, res, next) => {
     try {
@@ -40,6 +41,7 @@ const createReservation = async (req, res, next) => {
         const { error, reservation_id } = await overlapDetector(cabin, checkin, checkout)
         if (error) return res.json({ error, reservation_id })
 
+
         const newReservation = await Reservation.create(
             {
                 client,
@@ -64,6 +66,8 @@ const createReservation = async (req, res, next) => {
 
         // actualizo reservas de la cabaña
         const updatedCabin = await updateCabin(cabin, newReservation.id, checkin, checkout)
+
+        await registerEntry(req.body, user_name, newReservation.id)
 
         const allReservations = await Reservation.find()
             .populate('client')
@@ -216,6 +220,7 @@ const deleteReservation = async (req, res, next) => {
 
 const quickPayment = async (req, res, next) => {
     try {
+        const { user_name } = req.user
         const { id } = req.query
         const {
             paymentStatus,
@@ -257,6 +262,15 @@ const quickPayment = async (req, res, next) => {
         }
 
         await reserv.save()
+
+        const entryData = {
+            client: reserv.client,
+            checkin: new Date().toLocaleDateString('en'),
+            currency,
+            amount
+        }
+
+        await registerEntry(entryData, user_name, id)
 
         const reservationsList = await Reservation.find({})
             .populate('client')
