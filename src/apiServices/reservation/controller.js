@@ -3,6 +3,7 @@ import { overlapDetector, removeFromCabin, updateCabin } from "./utils.js";
 import mongoose from 'mongoose';
 import Cabin from '../cabin/model.js'
 import { registerEntry } from "../../utils/registerEntry.js";
+import { deleteEntries } from "../../utils/deleteEntries.js";
 
 const createReservation = async (req, res, next) => {
     try {
@@ -67,6 +68,7 @@ const createReservation = async (req, res, next) => {
         // actualizo reservas de la cabaña
         const updatedCabin = await updateCabin(cabin, newReservation.id, checkin, checkout)
 
+        //? Registra entrada contable
         await registerEntry(req.body, user_name, newReservation.id)
 
         const allReservations = await Reservation.find()
@@ -198,7 +200,7 @@ const editReservation = async (req, res, next) => {
 
 const deleteReservation = async (req, res, next) => {
     try {
-        const { id } = req.query
+        const { id, remove } = req.query
         if (!id) return res.json({ error: 'No ID' })
 
         const existingID = await Reservation.findById(id)
@@ -209,6 +211,11 @@ const deleteReservation = async (req, res, next) => {
         const cabinExists = await Cabin.findById(cabin)
         // cabin = cabin ID, id = reservation ID
         if (cabinExists) await removeFromCabin(cabin, id)
+
+        //: Remove ledger entries
+        if (remove === 'true') {
+            await deleteEntries(id)
+        }
 
         const allReservations = await Reservation.find({})
         return res.json({ message: 'Reserva eliminada.', reservationList: allReservations })

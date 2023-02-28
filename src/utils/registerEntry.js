@@ -7,6 +7,7 @@ export const registerEntry = async (data, creator, reservation) => {
         checkin,
         amount,
         currency,
+        paymentType,
         extraPayments
     } = data
 
@@ -18,7 +19,7 @@ export const registerEntry = async (data, creator, reservation) => {
         const entry = {
             date: today.toLocaleDateString('en'),
             entryType: 'income',
-            description: `Reserva de ${clientData.name} (${clientData.nationality}) ${!!extraPayments?.length ? '- Pago #1' : ''}`,
+            description: `Reserva de ${clientData.name} (${clientData.nationality}) -  (${paymentType}) ${!!extraPayments?.length ? 'Pago #1' : ''}`,
             amount,
             currency,
             reservation,
@@ -48,7 +49,7 @@ export const registerEntry = async (data, creator, reservation) => {
 
         if (!!extraPayments?.length) {
             extraPayments.forEach((e, i) => {
-                entry.description = `${entry.description} - Pago #${i + 2}`
+                entry.description = `${entry.description.split('-')[0]} - (${e.paymentType}) Pago #${i + 2}`
                 entry.amount = e.amount
                 entry.currency = e.currency
 

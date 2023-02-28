@@ -117,7 +117,6 @@ const getWeek = async (req, res, next) => {
     }
 }
 
-
 const newEntry = async (req, res, next) => {
     try {
         const { user_name } = req.user
