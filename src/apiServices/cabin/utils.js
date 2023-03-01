@@ -40,12 +40,10 @@ export const updateCabinReservs = async (cabin_id) => {
                 // checkear que la reserva exista
                 const reserv = await Reservation.findById(r.reservation_id)
                 if (reserv) {
-                    // no guardar la reserva actual
                     if (checkin <= today && checkout > today) {
                         cabin.current_guest = r.reservation_id
-                    } else {
-                        newReservations.push(r)
                     }
+                    newReservations.push(r)
                 }
             }
         }
