@@ -1,12 +1,12 @@
 import Cabin from "./model.js"
-import { updateCabinGuest } from "./utils.js"
+import { updateCabinReservs } from "./utils.js"
 
 const getCabin = async (req, res, next) => {
     try {
         const { id } = req.query
         if (!id) return res.json({ error: 'No cabin ID' })
 
-        const { error } = await updateCabinGuest(id)
+        const { error } = await updateCabinReservs(id)
         if (error) return res.json(error)
 
         // populate path AND subdocument path
@@ -30,7 +30,7 @@ const getAllCabins = async (req, res, next) => {
 
         for (let i = 0; i < cabins.length; i++) {
             const cabin = cabins[i];
-            await updateCabinGuest(cabin.id)
+            await updateCabinReservs(cabin.id)
         }
 
         // populate path AND subdocument path

@@ -22,19 +22,47 @@ const overlapDetector = async (cabin, checkin, checkout) => {
         return { error }
     }
 }
-//? update cabin's reservation list
-const updateCabin = async (cabin, id, checkin, checkout) => {
-    const updateCabin = await Cabin.findById(cabin)
-    updateCabin.reservations.push(
+
+//? add to cabin's reservation list
+const addToCabinList = async (cabin, id, checkin, checkout) => {
+    const updateCabin = await Cabin.findByIdAndUpdate(
+        cabin,
         {
-            reservation_id: id,
-            in: checkin,
-            out: checkout
+            "$push": {
+                reservations: {
+                    reservation_id: id,
+                    in: checkin,
+                    out: checkout
+                }
+            }
         }
     )
-    await updateCabin.save()
+
     return
 }
+
+//? update data on cabin's reservation list
+const updateCabinList = async (cabin, id, checkin, checkout) => {
+
+    const aux = await Cabin.findOneAndUpdate(
+        {
+            "reservations.reservation_id": id
+        },
+        {
+            "$set": {
+                "reservations.$": {
+                    reservation_id: id,
+                    checkin,
+                    checkout
+                }
+            }
+        },
+        { new: true }
+    )
+
+    return
+}
+
 //? remove from cabin's reservation list
 const removeFromCabin = async (cabin, id) => {
     await Cabin.findByIdAndUpdate(
@@ -52,6 +80,7 @@ const removeFromCabin = async (cabin, id) => {
 
 export {
     overlapDetector,
-    updateCabin,
+    addToCabinList,
+    updateCabinList,
     removeFromCabin
 }

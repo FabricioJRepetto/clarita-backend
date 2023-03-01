@@ -1,5 +1,5 @@
 import Reservation from "./model.js";
-import { overlapDetector, removeFromCabin, updateCabin } from "./utils.js";
+import { addToCabinList, overlapDetector, removeFromCabin, updateCabinList } from "./utils.js";
 import mongoose from 'mongoose';
 import Cabin from '../cabin/model.js'
 import { registerEntry, registerUpdatedEntries } from "../../utils/registerEntry.js";
@@ -66,7 +66,7 @@ const createReservation = async (req, res, next) => {
         )
 
         // actualizo reservas de la cabaña
-        const updatedCabin = await updateCabin(cabin, newReservation.id, checkin, checkout)
+        const updatedCabin = await addToCabinList(cabin, newReservation.id, checkin, checkout)
 
         //? Registra entrada contable
         await registerEntry(req.body, user_name, newReservation.id)
@@ -181,7 +181,7 @@ const editReservation = async (req, res, next) => {
             { new: true }
         )
 
-        const updatedCabin = await updateCabin(cabin, newReservation.id, checkin, checkout)
+        const updatedCabin = await addToCabinList(cabin, newReservation.id, checkin, checkout)
 
         //: eliminar entries anteriores...
         //: y guardar ID del ledger
