@@ -36,7 +36,7 @@ export const updateCabinReservs = async (cabin_id) => {
                 today = new Date(new Date().toLocaleDateString('en'))
 
             // filtrar reservas pasadas
-            if (checkout > today) {
+            if (checkout >= today) {
                 // checkear que la reserva exista
                 const reserv = await Reservation.findById(r.reservation_id)
                 if (reserv) {
