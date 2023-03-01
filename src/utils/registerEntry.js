@@ -64,3 +64,52 @@ export const registerEntry = async (data, creator, reservation) => {
 
     return
 }
+
+export const registerUpdatedEntries = async (data, ledger_data, reservation, editor) => {
+    const {
+        client,
+        amount,
+        currency,
+        paymentType,
+        extraPayments
+    } = data
+
+    const {
+        id,
+        date
+    } = ledger_data
+
+    if (!client) return
+    if (!id) return
+    if (!date) return
+
+    const clientData = await Client.findById(client)
+
+    const entry = {
+        date: date,
+        entryType: 'income',
+        description: `Reserva de ${clientData.name} (${clientData.nationality}) -  (${paymentType}) ${!!extraPayments?.length ? 'Pago #1' : ''}`,
+        amount,
+        currency,
+        reservation,
+        editor
+    }
+
+    const ledger = await Ledger.findByIdAndUpdate(id)
+
+    ledger.entries.push(entry)
+    await ledger.save()
+
+    if (!!extraPayments?.length) {
+        extraPayments.forEach((e, i) => {
+            entry.description = `${entry.description.split('-')[0]} - (${e.paymentType}) Pago #${i + 2}`
+            entry.amount = e.amount
+            entry.currency = e.currency
+
+            ledger.entries.push(entry)
+        });
+        await ledger.save()
+    }
+
+    return
+}

@@ -2,7 +2,7 @@ import Reservation from "./model.js";
 import { overlapDetector, removeFromCabin, updateCabin } from "./utils.js";
 import mongoose from 'mongoose';
 import Cabin from '../cabin/model.js'
-import { registerEntry } from "../../utils/registerEntry.js";
+import { registerEntry, registerUpdatedEntries } from "../../utils/registerEntry.js";
 import { deleteEntries } from "../../utils/deleteEntries.js";
 
 const createReservation = async (req, res, next) => {
@@ -183,9 +183,17 @@ const editReservation = async (req, res, next) => {
 
         const updatedCabin = await updateCabin(cabin, newReservation.id, checkin, checkout)
 
+        //: eliminar entries anteriores...
+        //: y guardar ID del ledger
+        const ledger_data = await deleteEntries(id)
+
+        //: agregar las entries actualizadas
+        await registerUpdatedEntries(req.body, ledger_data, id, user_name)
+
         const allReservations = await Reservation.find({})
             .populate('client')
             .populate('cabin', 'name')
+
         return res.json({
             message: 'Reserva actualizada exitosamente.',
             newReservation,

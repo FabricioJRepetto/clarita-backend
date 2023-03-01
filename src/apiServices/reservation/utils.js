@@ -37,10 +37,16 @@ const updateCabin = async (cabin, id, checkin, checkout) => {
 }
 //? remove from cabin's reservation list
 const removeFromCabin = async (cabin, id) => {
-    const targetCabin = await Cabin.findById(cabin)
-
-    targetCabin.reservations = targetCabin.reservations.filter(r => r.reservation_id !== id)
-    await targetCabin.save()
+    await Cabin.findByIdAndUpdate(
+        cabin,
+        {
+            "$pull": {
+                reservations: {
+                    reservation_id: id
+                }
+            }
+        }
+    )
     return
 }
 
