@@ -27,7 +27,6 @@ export const updateCabinReservs = async (cabin_id) => {
     if (!!cabin.reservations.length) {
         // checkear todas las reservas buscando una reserva actual
         // si el checkin es <= a hoy && checkout es > a hoy, agregar a current_guest
-        //: TODO: filtrar las reservas mayores a X dias
         const newReservations = []
         for (let i = 0; i < cabin.reservations.length; i++) {
             const r = cabin.reservations[i],
