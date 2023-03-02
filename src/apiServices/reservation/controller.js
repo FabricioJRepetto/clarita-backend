@@ -280,6 +280,7 @@ const quickPayment = async (req, res, next) => {
 
         const entryData = {
             client: reserv.client,
+            paymentType,
             checkin: new Date().toLocaleDateString('en'),
             currency,
             amount
