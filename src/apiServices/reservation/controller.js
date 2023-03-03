@@ -238,6 +238,7 @@ const quickPayment = async (req, res, next) => {
         const { user_name } = req.user
         const { id } = req.query
         const {
+            date,
             paymentStatus,
             paymentType,
             amount,
@@ -258,6 +259,7 @@ const quickPayment = async (req, res, next) => {
         const extra_id = !!reserv?.extraPayments?.length ? 'extra' + (reserv?.extraPayments?.length + 1) : 'extra1',
             data = {
                 id: extra_id,
+                date,
                 paymentType,
                 currency,
                 amount,

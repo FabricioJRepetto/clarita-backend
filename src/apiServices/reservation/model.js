@@ -28,6 +28,7 @@ const ReservationSchema = new Schema(
         extraPayments: [
             {
                 id: { type: String },
+                date: { type: String },
                 paymentType: { type: String },
                 currency: { type: String },
                 amount: { type: Number },
