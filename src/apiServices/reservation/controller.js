@@ -2,7 +2,7 @@ import Reservation from "./model.js";
 import { addToCabinList, overlapDetector, removeFromCabin, updateCabinList } from "./utils.js";
 import mongoose from 'mongoose';
 import Cabin from '../cabin/model.js'
-import { registerEntry, registerUpdatedEntries } from "../../utils/registerEntry.js";
+import { registerEntry, registerQuickEntry, registerUpdatedEntries } from "../../utils/registerEntry.js";
 import { deleteEntries } from "../../utils/deleteEntries.js";
 
 const createReservation = async (req, res, next) => {
@@ -17,6 +17,7 @@ const createReservation = async (req, res, next) => {
             persons,
             paymentStatus,
             currency,
+            paymentDate,
             paymentType,
             fees,
             mpDetails,
@@ -51,6 +52,7 @@ const createReservation = async (req, res, next) => {
                 nights,
                 cabin,
                 persons,
+                paymentDate,
                 paymentStatus,
                 currency,
                 paymentType,
@@ -127,6 +129,7 @@ const editReservation = async (req, res, next) => {
             cabin,
             persons,
             paymentStatus,
+            paymentDate,
             paymentType,
             currency,
             amount,
@@ -166,6 +169,7 @@ const editReservation = async (req, res, next) => {
                     cabin,
                     persons,
                     paymentStatus,
+                    paymentDate,
                     paymentType,
                     currency,
                     amount,
@@ -238,7 +242,7 @@ const quickPayment = async (req, res, next) => {
         const { user_name } = req.user
         const { id } = req.query
         const {
-            date,
+            paymentDate,
             paymentStatus,
             paymentType,
             amount,
@@ -259,7 +263,7 @@ const quickPayment = async (req, res, next) => {
         const extra_id = !!reserv?.extraPayments?.length ? 'extra' + (reserv?.extraPayments?.length + 1) : 'extra1',
             data = {
                 id: extra_id,
-                date,
+                paymentDate,
                 paymentType,
                 currency,
                 amount,
@@ -282,13 +286,14 @@ const quickPayment = async (req, res, next) => {
 
         const entryData = {
             client: reserv.client,
+            paymentDate,
             paymentType,
             checkin: new Date().toLocaleDateString('en'),
             currency,
             amount
         }
 
-        await registerEntry(entryData, user_name, id)
+        await registerQuickEntry(entryData, user_name, id)
 
         const reservationsList = await Reservation.find({})
             .populate('client')

@@ -7,6 +7,7 @@ export const registerEntry = async (data, creator, reservation) => {
         checkin,
         amount,
         currency,
+        paymentDate,
         paymentType,
         extraPayments
     } = data
@@ -17,7 +18,7 @@ export const registerEntry = async (data, creator, reservation) => {
         const clientData = await Client.findById(client)
 
         const entry = {
-            date: today.toLocaleDateString('en'),
+            date: paymentDate,
             entryType: 'income',
             description: `Reserva de ${clientData.name} (${clientData.nationality}) -  (${paymentType}) ${!!extraPayments?.length ? 'Pago #1' : ''}`,
             amount,
@@ -27,8 +28,8 @@ export const registerEntry = async (data, creator, reservation) => {
         }
         // console.log(entry);
 
-        const MONTH = new Date(today).getMonth()
-        const YEAR = new Date(today).getFullYear()
+        const MONTH = new Date(paymentDate).getMonth()
+        const YEAR = new Date(paymentDate).getFullYear()
 
         const ledger = await Ledger.findOne({
             month: MONTH,
@@ -47,14 +48,49 @@ export const registerEntry = async (data, creator, reservation) => {
             })
         }
 
-        if (!!extraPayments?.length) {
-            extraPayments.forEach((e, i) => {
-                entry.description = `${entry.description.split('-')[0]} - (${e.paymentType}) Pago #${i + 2}`
-                entry.amount = e.amount
-                entry.currency = e.currency
+        if (extraPayments && !!extraPayments?.length) {
+            // si hay extras, recorremos
+            // si la fecha de ese pago es igual, guardamos
+            // si es diferente, buscamos o creamos nuevo doc y guardamos
+            for (let i = 0; i < extraPayments.length; i++) {
+                const e = extraPayments[i];
 
-                ledger.entries.push(entry)
-            });
+                if (paymentDate === e.paymentDate) {
+                    entry.date = paymentDate,
+                        entry.description = `${entry.description.split('-')[0]} - (${e.paymentType}) Pago #${i + 2}`
+                    entry.amount = e.amount
+                    entry.currency = e.currency
+
+                    ledger.entries.push(entry)
+                } else {
+                    const MONTH = new Date(e.paymentDate).getMonth()
+                    const YEAR = new Date(e.paymentDate).getFullYear()
+
+                    const otherLedger = await Ledger.findOne({
+                        month: MONTH,
+                        year: YEAR
+                    })
+
+                    entry.date = e.paymentDate
+                    entry.description = `${entry.description.split('-')[0]} - (${e.paymentType}) Pago #${i + 2}`
+                    entry.amount = e.amount
+                    entry.currency = e.currency
+
+                    if (otherLedger) {
+                        otherLedger.entries.push(entry)
+                        await otherLedger.save()
+
+                    } else {
+                        await Ledger.create({
+                            month: MONTH,
+                            year: YEAR,
+                            entries: [entry]
+                        })
+                    }
+
+                }
+
+            }
             await ledger.save()
         }
 
@@ -70,23 +106,17 @@ export const registerUpdatedEntries = async (data, ledger_data, reservation, edi
         client,
         amount,
         currency,
+        paymentDate,
         paymentType,
         extraPayments
     } = data
 
-    const {
-        id,
-        date
-    } = ledger_data
-
     if (!client) return
-    if (!id) return
-    if (!date) return
 
     const clientData = await Client.findById(client)
 
     const entry = {
-        date: date,
+        date: paymentDate,
         entryType: 'income',
         description: `Reserva de ${clientData.name} (${clientData.nationality}) -  (${paymentType}) ${!!extraPayments?.length ? 'Pago #1' : ''}`,
         amount,
@@ -95,21 +125,107 @@ export const registerUpdatedEntries = async (data, ledger_data, reservation, edi
         editor
     }
 
-    const ledger = await Ledger.findByIdAndUpdate(id)
+    const MONTH = new Date(paymentDate).getMonth()
+    const YEAR = new Date(paymentDate).getFullYear()
+
+    const ledger = await Ledger.findOne({
+        month: MONTH,
+        year: YEAR
+    })
 
     ledger.entries.push(entry)
     await ledger.save()
 
     if (!!extraPayments?.length) {
-        extraPayments.forEach((e, i) => {
-            entry.description = `${entry.description.split('-')[0]} - (${e.paymentType}) Pago #${i + 2}`
-            entry.amount = e.amount
-            entry.currency = e.currency
+        // si hay extras, recorremos
+        // si la fecha de ese pago es igual, guardamos
+        // si es diferente, buscamos o creamos nuevo doc y guardamos
+        for (let i = 0; i < extraPayments.length; i++) {
+            const e = extraPayments[i];
 
-            ledger.entries.push(entry)
-        });
+            if (paymentDate === e.paymentDate) {
+                entry.date = paymentDate,
+                    entry.description = `${entry.description.split('-')[0]} - (${e.paymentType}) Pago #${i + 2}`
+                entry.amount = e.amount
+                entry.currency = e.currency
+
+                ledger.entries.push(entry)
+            } else {
+                const MONTH = new Date(e.paymentDate).getMonth()
+                const YEAR = new Date(e.paymentDate).getFullYear()
+
+                const otherLedger = await Ledger.findOne({
+                    month: MONTH,
+                    year: YEAR
+                })
+
+                entry.date = e.paymentDate
+                entry.description = `${entry.description.split('-')[0]} - (${e.paymentType}) Pago #${i + 2}`
+                entry.amount = e.amount
+                entry.currency = e.currency
+
+                if (otherLedger) {
+                    otherLedger.entries.push(entry)
+                    await otherLedger.save()
+
+                } else {
+                    await Ledger.create({
+                        month: MONTH,
+                        year: YEAR,
+                        entries: [entry]
+                    })
+                }
+
+            }
+
+        }
         await ledger.save()
     }
 
     return
+}
+
+export const registerQuickEntry = async (data, editor, reservation) => {
+    const {
+        client,
+        amount,
+        currency,
+        paymentDate,
+        paymentType
+    } = data
+    console.log('@@@@registerQuickEntry', data);
+
+    if (!client) return
+
+    const clientData = await Client.findById(client)
+
+    const entry = {
+        date: paymentDate,
+        entryType: 'income',
+        description: `Reserva de ${clientData.name} (${clientData.nationality}) -  (${paymentType}) Pago Extra`,
+        amount,
+        currency,
+        reservation,
+        editor
+    }
+
+    const MONTH = new Date(paymentDate).getMonth()
+    const YEAR = new Date(paymentDate).getFullYear()
+
+    const ledger = await Ledger.findOne({
+        month: MONTH,
+        year: YEAR
+    })
+
+    if (ledger) {
+        ledger.entries.push(entry)
+        await ledger.save()
+
+    } else {
+        await Ledger.create({
+            month: MONTH,
+            year: YEAR,
+            entries: [entry]
+        })
+    }
 }

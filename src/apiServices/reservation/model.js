@@ -19,6 +19,7 @@ const ReservationSchema = new Schema(
             type: Boolean,
             default: true
         },
+        paymentDate: { type: String },
         paymentType: { type: String },
         currency: { type: String },
         amount: { type: Number },
@@ -28,7 +29,7 @@ const ReservationSchema = new Schema(
         extraPayments: [
             {
                 id: { type: String },
-                date: { type: String },
+                paymentDate: { type: String },
                 paymentType: { type: String },
                 currency: { type: String },
                 amount: { type: Number },
