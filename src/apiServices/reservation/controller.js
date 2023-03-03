@@ -189,10 +189,10 @@ const editReservation = async (req, res, next) => {
 
         //: eliminar entries anteriores...
         //: y guardar ID del ledger
-        const ledger_data = await deleteEntries(id)
+        await deleteEntries(id)
 
         //: agregar las entries actualizadas
-        await registerUpdatedEntries(req.body, ledger_data, id, user_name)
+        await registerUpdatedEntries(req.body, id, user_name)
 
         const allReservations = await Reservation.find({})
             .populate('client')
