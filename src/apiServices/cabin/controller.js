@@ -53,18 +53,22 @@ const createCabin = async (req, res, next) => {
         const {
             name,
             identifier,
+            capacity,
             icon
         } = req.body
-        let aux = {}
+
         if (!name) return res.json({ error: 'No cabin name' })
         if (!identifier) return res.json({ error: 'No cabin identifier' })
+        if (!capacity) return res.json({ error: 'No cabin capacity' })
         // if (!icon) return res.json({ error: 'No cabin icon' })
 
         //: checkear que el nombre no se repita
         const nameInUse = await Cabin.findOne({ name })
         if (nameInUse) return res.json({ error: 'El nombre ya está en uso' })
 
+        let aux = {}
         name && (aux.name = name)
+        capacity && (aux.capacity = capacity)
         identifier && (aux.identifier = identifier)
         icon && (aux.icon = icon)
 
@@ -99,11 +103,13 @@ const editCabin = async (req, res, next) => {
         const {
             name,
             identifier,
+            capacity,
             icon
         } = req.body
 
         if (!id) return res.json({ error: 'No ID' })
         if (!name) return res.json({ error: 'No cabin name' })
+        if (!capacity) return res.json({ error: 'No cabin capacity' })
 
         //: checkear que el numbre no se repita
         const nameInUse = await Cabin.findOne({ name })
@@ -113,6 +119,7 @@ const editCabin = async (req, res, next) => {
         if (!targetCabin) return res.json({ error: 'No cabins with that ID' })
 
         name && (targetCabin.name = name)
+        capacity && (targetCabin.capacity = capacity)
         identifier && (targetCabin.identifier = identifier)
         icon && (targetCabin.icon = icon)
         await targetCabin.save()
@@ -160,10 +167,39 @@ const deleteCabin = async (req, res, next) => {
     }
 }
 
+const changeAvailability = async (req, res, next) => {
+    try {
+        const { id } = req.query
+        if (!id) return res.json({ error: 'No ID' })
+
+        const targetCabin = await Cabin.findById(id)
+        if (!targetCabin) return res.json({ error: 'No cabins with that ID' })
+
+        targetCabin.enabled = !targetCabin.enabled
+        await targetCabin.save()
+
+        const cabinsList = await Cabin.find()
+            .populate('current_guest')
+            .populate({
+                path: 'current_guest',
+                populate: 'client'
+            })
+
+        return res.json({
+            message: 'Disponibilidad actualizada.',
+            cabinsList
+        })
+
+    } catch (err) {
+        next(err)
+    }
+}
+
 export {
     getCabin,
     getAllCabins,
     createCabin,
     editCabin,
-    deleteCabin
+    deleteCabin,
+    changeAvailability
 }

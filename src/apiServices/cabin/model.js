@@ -8,9 +8,14 @@ const CabinSchema = new Schema(
             required: true,
             unique: true
         },
-        identifier: {
-            type: String,
-            // required: true
+        capacity: {
+            type: Number,
+            required: true,
+        },
+        identifier: { type: String },
+        enabled: {
+            type: Boolean,
+            default: true
         },
         icon: { type: String },
         current_guest: {
