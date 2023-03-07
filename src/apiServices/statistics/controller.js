@@ -135,6 +135,9 @@ const getMonth = async (req, res, next) => {
             ledger.entries.forEach(e => {
                 if (e.date && e.currency === 'ARS') {
                     const index = new Date(e.date).getDate() - 1
+
+
+
                     days[index][e.entryType]
                         ? days[index][e.entryType] += e.amount
                         : days[index] = { ...days[index], [e.entryType]: e.amount }
