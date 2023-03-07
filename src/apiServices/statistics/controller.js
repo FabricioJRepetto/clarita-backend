@@ -4,12 +4,10 @@ import { nextMonth } from '../../utils/formatDate.js'
 
 const test = async (req, res, next) => {
     try {
-        const { date } = req.query,
-            limit = nextMonth(date)
+        // const { month, year } = req.query
 
-        // const numReserv = await Reservation.find({
-        //     createdAt: { $gte: date, $lt: limit }
-        // })
+        // if (!month) return res.json({ error: 'No month' })
+        // if (!year) return res.json({ error: 'No year' })
 
         const bookings = await Reservation.aggregate([
             {
@@ -22,7 +20,7 @@ const test = async (req, res, next) => {
                             $year: '$createdAt'
                         }
                     },
-                    numberOfBookings: { $sum: 1 },
+                    totalBookings: { $sum: 1 },
 
                 }
             }
@@ -46,8 +44,8 @@ const test = async (req, res, next) => {
                             }
                         }
                     },
-                    numberOfReservs: { $sum: 1 },
-                    numberOfGuests: { $sum: '$persons' }
+                    totalHostings: { $sum: 1 },
+                    totalGuests: { $sum: '$persons' }
                 }
             }
         ])
@@ -59,7 +57,7 @@ const test = async (req, res, next) => {
                         month: "$month",
                         year: "$year",
                     },
-                    totalIncome: {
+                    reservsIncome: {
                         $sum: {
                             $cond: [
                                 {
@@ -72,37 +70,97 @@ const test = async (req, res, next) => {
                                 0
                             ],
                         }
+                    },
+                    totalIncome: {
+                        $sum: {
+                            $cond: [
+                                {
+                                    "$eq": ["$entries.currency", "ARS"]
+                                },
+                                "$entries.amount",
+                                0
+                            ],
+                        }
                     }
                 }
             }
         ])
 
         const averageBookings = bookings.reduce(
-            (total, curr) => total + curr.numberOfBookings, 0
+            (total, curr) => total + curr.totalBookings, 0
         ) / bookings.length
 
         const averageHostings = hostings.reduce(
-            (total, curr) => total + curr.numberOfReservs, 0
+            (total, curr) => total + curr.totalHostings, 0
         ) / hostings.length
+
+        const averageReservIncome = income.reduce(
+            (total, curr) => total + curr.reservsIncome, 0
+        ) / income.length
+
+        const averageIncome = income.reduce(
+            (total, curr) => total + curr.totalIncome, 0
+        ) / income.length
 
         const aux = {
             bookings,
             averageBookings,
             hostings,
             averageHostings,
-            income
+            income,
+            averageReservIncome,
+            averageIncome
         }
 
+        res.json(aux)
+    } catch (err) {
+        next(err)
+    }
+}
 
+const getMonth = async (req, res, next) => {
+    try {
+        const { month, year } = req.query
 
-        res.json({ aux })
+        if (!month) return res.json({ error: 'No month' })
+        if (!year) return res.json({ error: 'No year' })
+
+        const ledger = await Ledger.findOne({ month, year })
+
+        const aux1 = ledger.entries.map(e => ({ date: e.date, ammount: `${e.amount} ${e.currency}` }))
+        console.log(aux1);
+
+        if (ledger?.entries) {
+            const days = new Array(new Date(year, month + 1, 0).getDate()).fill({})
+            ledger.entries.forEach(e => {
+                if (e.date && e.currency === 'ARS') {
+                    const index = new Date(e.date).getDate() - 1
+                    days[index][e.entryType]
+                        ? days[index][e.entryType] += e.amount
+                        : days[index] = { ...days[index], [e.entryType]: e.amount }
+                }
+            })
+
+            const dailyBalance = days.map(e => ({
+                income: e?.income || 0,
+                expense: e?.expense || 0,
+                total: (e?.income || 0) - (e?.expense || 0)
+            }))
+            // console.log(ledger.entries);
+
+            return res.json({ dailyBalance, balance: ledger.balance })
+        } else {
+            return res.json([])
+        }
+
     } catch (err) {
         next(err)
     }
 }
 
 export {
-    test
+    test,
+    getMonth
 }
 
 /*    
@@ -118,7 +176,7 @@ export {
             Reservation: checkin
         *Total de Huespedes este Mes: 
                 Reservation: persons
-        _Total generado por reservas: 
+        *Total generado por reservas: 
                 Ledger: entries con ID de reserva
         *Promedio de Hospedajes Mensuales
 */
