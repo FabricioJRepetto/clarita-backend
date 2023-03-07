@@ -10,7 +10,7 @@ const CabinSchema = new Schema(
         },
         capacity: {
             type: Number,
-            required: true,
+            // required: true
         },
         identifier: { type: String },
         enabled: {
