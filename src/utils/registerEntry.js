@@ -74,7 +74,7 @@ const saveEntries = async (template, date, extraPayments = false) => {
 export const registerEntry = async (data, creator, reservation) => {
     const {
         client,
-        checkin,
+        // checkin,
         amount,
         currency,
         paymentDate,
@@ -83,26 +83,26 @@ export const registerEntry = async (data, creator, reservation) => {
     } = data
 
     //? agrego el movimiento a las cuentas
-    const today = new Date(new Date().toLocaleDateString('en'))
-    if (new Date(checkin) >= today) {
-        const clientData = await Client.findById(client)
+    // const today = new Date(new Date().toLocaleDateString('en'))
+    // if (new Date(checkin) >= today) {
+    const clientData = await Client.findById(client)
 
-        const entry = {
-            date: paymentDate,
-            entryType: 'income',
-            description: `Reserva de ${clientData.name} (${clientData.nationality}) -  (${paymentType}) ${!!extraPayments?.length ? 'Pago #1' : ''}`,
-            amount,
-            currency,
-            reservation,
-            creator
-        }
-        // console.log(entry);
-
-        await saveEntries(entry, paymentDate, extraPayments)
-
-    } else {
-        // ##### no se guarda
+    const entry = {
+        date: paymentDate,
+        entryType: 'income',
+        description: `Reserva de ${clientData.name} (${clientData.nationality}) -  (${paymentType}) ${!!extraPayments?.length ? 'Pago #1' : ''}`,
+        amount,
+        currency,
+        reservation,
+        creator
     }
+    // console.log(entry);
+
+    await saveEntries(entry, paymentDate, extraPayments)
+
+    // } else {
+    // ##### no se guarda
+    // }
 
     return
 }
