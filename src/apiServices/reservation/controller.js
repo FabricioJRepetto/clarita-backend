@@ -38,7 +38,6 @@ const createReservation = async (req, res, next) => {
         if (!currency) return res.json({ error: 'No payment currency' })
         if (!paymentType) return res.json({ error: 'No payment paymentType' })
         if (typeof amount !== 'number') return res.json({ error: 'No payment amount' })
-        // if (!notes) return res.json({ error: 'No notes' })
 
         const { error, reservation_id } = await overlapDetector(cabin, checkin, checkout)
         if (error) return res.json({ error, reservation_id })
