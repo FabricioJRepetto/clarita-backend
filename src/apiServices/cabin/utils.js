@@ -4,7 +4,9 @@ import { dateSort } from "../../utils/sorter.js";
 
 //? update cabin's current reservation
 export const updateCabinReservs = async (cabin_id) => {
-    const cabin = await Cabin.findById(cabin_id)
+    const cabin = await Cabin.findById(cabin_id),
+        today = new Date(new Date().toLocaleDateString('en'))
+
     if (!cabin) return { error: 'No cabins with that ID' }
 
     if (cabin.current_guest) {
@@ -15,8 +17,7 @@ export const updateCabinReservs = async (cabin_id) => {
         } else {
             // checkear las fechas de la reserva actual
             const checkin = new Date(reservation.checkin),
-                checkout = new Date(reservation.checkout),
-                today = new Date(new Date().toLocaleDateString('en'))
+                checkout = new Date(reservation.checkout)
 
             // si in es > a hoy o out es < a hoy, eliminar current_guest
             if (checkin > today || checkout < today) {
@@ -31,8 +32,7 @@ export const updateCabinReservs = async (cabin_id) => {
         for (let i = 0; i < cabin.reservations.length; i++) {
             const r = cabin.reservations[i],
                 checkin = new Date(r.in),
-                checkout = new Date(r.out),
-                today = new Date(new Date().toLocaleDateString('en'))
+                checkout = new Date(r.out)
 
             // filtrar reservas pasadas
             if (checkout >= today) {
