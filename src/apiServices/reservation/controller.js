@@ -33,7 +33,7 @@ const createReservation = async (req, res, next) => {
         if (!checkout) return res.json({ error: 'No checkout' })
         if (!nights) return res.json({ error: 'No nights' })
         if (!cabin) return res.json({ error: 'No cabin' })
-        // if (!persons) return res.json({ error: 'No persons' })
+        if (!persons) return res.json({ error: 'No persons' })
         if (!req.body.hasOwnProperty('paymentStatus')) return res.json({ error: 'No payment paymentStatus' })
         if (!currency) return res.json({ error: 'No payment currency' })
         if (!paymentType) return res.json({ error: 'No payment paymentType' })
