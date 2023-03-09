@@ -127,16 +127,11 @@ const getMonth = async (req, res, next) => {
 
         const ledger = await Ledger.findOne({ month, year })
 
-        const aux1 = ledger.entries.map(e => ({ date: e.date, ammount: `${e.amount} ${e.currency}` }))
-        console.log(aux1);
-
         if (ledger?.entries) {
             const days = new Array(new Date(year, month + 1, 0).getDate()).fill({})
             ledger.entries.forEach(e => {
                 if (e.date && e.currency === 'ARS') {
                     const index = new Date(e.date).getDate() - 1
-
-
 
                     days[index][e.entryType]
                         ? days[index][e.entryType] += e.amount
