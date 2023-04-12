@@ -120,7 +120,7 @@ const test = async (req, res, next) => {
 
 const getMonth = async (req, res, next) => {
     try {
-        const { month, year } = req.query
+        const { month, year, length = 31 } = req.query
 
         if (!month) return res.json({ error: 'No month' })
         if (!year) return res.json({ error: 'No year' })
@@ -128,7 +128,8 @@ const getMonth = async (req, res, next) => {
         const ledger = await Ledger.findOne({ month, year })
 
         if (ledger?.entries) {
-            const days = new Array(new Date(year, month + 1, 0).getDate()).fill({})
+            const days = new Array(length).fill({})
+
             ledger.entries.forEach(e => {
                 if (e.date && e.currency === 'ARS') {
                     const index = new Date(e.date).getDate() - 1
@@ -144,7 +145,6 @@ const getMonth = async (req, res, next) => {
                 expense: e?.expense || 0,
                 total: (e?.income || 0) - (e?.expense || 0)
             }))
-            // console.log(ledger.entries);
 
             return res.json({ dailyBalance, balance: ledger.balance })
         } else {

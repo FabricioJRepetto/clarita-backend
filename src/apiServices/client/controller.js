@@ -104,6 +104,7 @@ const editClient = async (req, res, next) => {
 
         // si cambió, checkear que el DNI/CUIL nuevo no esté en uso
         const client = await Client.findById(id)
+        console.log(id);
 
         if (company) {
             if (!client?.cuil || client?.cuil !== cuil) {
@@ -112,6 +113,7 @@ const editClient = async (req, res, next) => {
             }
         } else {
             if (!client?.dni || client?.dni !== dni) {
+                console.log(client?.dni, dni);
                 const dniInUse = await Client.findOne({ dni })
                 if (dniInUse) return res.json({ error: 'El nuevo DNI ya está en uso.' })
             }
