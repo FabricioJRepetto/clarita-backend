@@ -155,7 +155,9 @@ const editReservation = async (req, res, next) => {
         const { error, reservation_id } = await overlapDetector(cabin, checkin, checkout)
         if (error && reservation_id !== id) return res.json({ error })
 
-        await removeFromCabin(cabin, id)
+        // get original cabin
+        const { cabin: ogCabin } = await Reservation.findById(id);
+        await removeFromCabin(ogCabin, id)
 
         const newReservation = await Reservation.findByIdAndUpdate(
             id,
