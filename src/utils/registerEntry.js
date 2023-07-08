@@ -33,7 +33,8 @@ const saveEntries = async (template, date, extraPayments = false) => {
 
             if (date === e.paymentDate) {
                 entry.date = date,
-                    entry.description = `${entry.description.split('-')[0]} - (${e.paymentType}) Pago #${i + 2}`
+                    entry.description = `${entry.description.split('-')[0]} - Pago #${i + 2}`
+                entry.paymentType = e.paymentType
                 entry.amount = e.amount
                 entry.currency = e.currency
 
@@ -48,7 +49,8 @@ const saveEntries = async (template, date, extraPayments = false) => {
                 })
 
                 entry.date = e.paymentDate
-                entry.description = `${entry.description.split('-')[0]} - (${e.paymentType}) Pago #${i + 2}`
+                entry.description = `${entry.description.split('-')[0]} - Pago #${i + 2}`
+                entry.paymentType = e.paymentType
                 entry.amount = e.amount
                 entry.currency = e.currency
 
@@ -90,7 +92,8 @@ export const registerEntry = async (data, creator, reservation) => {
     const entry = {
         date: paymentDate,
         entryType: 'income',
-        description: `Reserva de ${clientData.name} (${clientData.nationality}) -  (${paymentType}) ${!!extraPayments?.length ? 'Pago #1' : ''}`,
+        description: `Reserva de ${clientData.name} (${clientData.nationality})${!!extraPayments?.length ? ' - Pago #1' : ''}`,
+        paymentType,
         amount,
         currency,
         reservation,
@@ -124,7 +127,8 @@ export const registerUpdatedEntries = async (data, reservation, editor) => {
     const entry = {
         date: paymentDate,
         entryType: 'income',
-        description: `Reserva de ${clientData.name} (${clientData.nationality}) -  (${paymentType}) ${!!extraPayments?.length ? 'Pago #1' : ''}`,
+        description: `Reserva de ${clientData.name} (${clientData.nationality})${!!extraPayments?.length ? ' - Pago #1' : ''}`,
+        paymentType,
         amount,
         currency,
         reservation,
@@ -152,7 +156,8 @@ export const registerQuickEntry = async (data, editor, reservation) => {
     const entry = {
         date: paymentDate,
         entryType: 'income',
-        description: `Reserva de ${clientData.name} (${clientData.nationality}) -  (${paymentType}) Pago Extra`,
+        description: `Reserva de ${clientData.name} (${clientData.nationality}) - Pago Extra`,
+        paymentType,
         amount,
         currency,
         reservation,

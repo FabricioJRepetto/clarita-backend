@@ -9,6 +9,7 @@ const LedgerSchema = new Schema(
             {
                 date: { type: String },
                 entryType: { type: String },
+                paymentType: { type: String },
                 description: { type: String },
                 amount: { type: Number },
                 currency: { type: String },

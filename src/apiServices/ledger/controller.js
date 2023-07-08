@@ -124,6 +124,7 @@ const newEntry = async (req, res, next) => {
             date,
             entryType,
             description,
+            paymentType,
             amount,
             currency,
             reservation
@@ -132,6 +133,7 @@ const newEntry = async (req, res, next) => {
         if (!date) return res.json({ error: 'No date' })
         if (!entryType) return res.json({ error: 'No entryType' })
         if (!description) return res.json({ error: 'No description' })
+        if (!paymentType) return res.json({ error: 'No paymentType' })
         if (!amount) return res.json({ error: 'No amount' })
         if (!currency) return res.json({ error: 'No currency' })
 
@@ -184,6 +186,7 @@ const updateEntry = async (req, res, next) => {
             date,
             entryType,
             description,
+            paymentType,
             amount,
             currency,
             reservation
@@ -193,6 +196,7 @@ const updateEntry = async (req, res, next) => {
         if (!date) return res.json({ error: 'No date' })
         if (!entryType) return res.json({ error: 'No entryType' })
         if (!description) return res.json({ error: 'No description' })
+        if (!paymentType) return res.json({ error: 'No paymentType' })
         if (!amount) return res.json({ error: 'No amount' })
         if (!currency) return res.json({ error: 'No currency' })
 
@@ -218,6 +222,7 @@ const updateEntry = async (req, res, next) => {
                         date,
                         entryType,
                         description,
+                        paymentType,
                         amount,
                         currency,
                         reservation,
