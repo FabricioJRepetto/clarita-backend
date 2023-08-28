@@ -65,8 +65,7 @@ const updateCabinList = async (cabin, id, checkin, checkout) => {
 
 //? remove from cabin's reservation list
 const removeFromCabin = async (cabin, id) => {
-    await Cabin.findByIdAndUpdate(
-        cabin,
+    await Cabin.findByIdAndUpdate(cabin,
         {
             "$pull": {
                 reservations: {

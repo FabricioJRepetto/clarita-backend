@@ -14,6 +14,8 @@ export const updateCabinReservs = async (cabin_id) => {
         const reservation = await Reservation.findById(cabin.current_guest)
         if (!reservation) {
             cabin.current_guest = null
+        } else if (reservation.cabin !== cabin_id) {
+            cabin.current_guest = null
         } else {
             // checkear las fechas de la reserva actual
             const checkin = new Date(reservation.checkin),
