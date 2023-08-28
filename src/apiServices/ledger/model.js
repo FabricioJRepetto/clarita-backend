@@ -38,7 +38,12 @@ LedgerSchema.virtual("balance").get(function () {
     let balance = {
         income: 0,
         expense: 0,
-        total: 0
+        total: 0,
+        usd: {
+            income: 0,
+            expense: 0,
+            total: 0
+        }
     };
     this.entries.forEach(m => {
         if (m.currency === 'ARS') {
@@ -48,8 +53,16 @@ LedgerSchema.virtual("balance").get(function () {
                 balance.expense = balance.expense + m.amount
             }
         }
+        if (m.currency === 'USD') {
+            if (m.entryType === 'income') {
+                balance.usd.income += m.amount
+            } else {
+                balance.usd.expense += m.amount
+            }
+        }
     });
     balance.total = balance.income - balance.expense
+    balance.usd.total = balance.usd.income - balance.usd.expense
     return balance;
 });
 // Ledger.badCurrencyList
